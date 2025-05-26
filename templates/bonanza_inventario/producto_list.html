@@ -1,0 +1,57 @@
+<!-- templates/bonanza_inventario/producto_list.html -->
+{% extends 'bonanza_inventario/base.html' %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<h2>Productos</h2>
+<a href="{% url 'crear_producto' %}" class="btn btn-primary mb-3">Nuevo Producto</a>
+<table class="table table-bordered table-striped datatable">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio Base</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.descripcion }}</td>
+            <td>${{ producto.precio_base }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h5 class="mt-5">Distribución de Precios</h5>
+<canvas id="chartPrecios"></canvas>
+
+<script>
+    const ctx = document.getElementById('chartPrecios');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for p in productos %}"{{ p.nombre }}",{% endfor %}],
+            datasets: [{
+                label: 'Precio Base',
+                data: [{% for p in productos %}{{ p.precio_base }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'bonanza_inventario/base.html' %}
+
+{% block title %}Bodegas{% endblock %}
+
+{% block content %}
+<h2>Bodegas</h2>
+<a href="{% url 'crear_bodega' %}" class="btn btn-primary mb-3">Nueva Bodega</a>
+<table class="table table-bordered table-striped datatable">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Municipio</th>
+            <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bodega in bodegas %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ bodega.nombre }}</td>
+            <td>{{ bodega.municipio.nombre }}</td>
+            <td>{{ bodega.direccion }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

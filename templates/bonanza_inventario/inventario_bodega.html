@@ -1,0 +1,54 @@
+{% extends 'bonanza_inventario/base.html' %}
+
+{% block title %}Inventario de {{ bodega.nombre }}{% endblock %}
+
+{% block content %}
+<h2>Inventario - {{ bodega.nombre }}</h2>
+<a href="{% url 'crear_inventario_bodega' bodega.id %}" class="btn btn-primary mb-3">Agregar Producto</a>
+<table class="table table-bordered table-striped datatable">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in inventario %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.producto.nombre }}</td>
+            <td>{{ item.cantidad }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h5 class="mt-5">Distribución del Inventario</h5>
+<canvas id="chartInventario"></canvas>
+
+<script>
+    const ctx = document.getElementById('chartInventario');
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for item in inventario %}"{{ item.producto.nombre }}",{% endfor %}],
+            datasets: [{
+                label: 'Cantidad',
+                data: [{% for item in inventario %}{{ item.cantidad }},{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+{% endblock %}

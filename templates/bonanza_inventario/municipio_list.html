@@ -1,0 +1,27 @@
+<!-- templates/bonanza_inventario/municipio_list.html -->
+{% extends 'bonanza_inventario/base.html' %}
+
+{% block title %}Municipios{% endblock %}
+
+{% block content %}
+<h2>Municipios</h2>
+<a href="{% url 'crear_municipio' %}" class="btn btn-primary mb-3">Nuevo Municipio</a>
+<table class="table table-bordered table-striped datatable">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Departamento</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for municipio in municipios %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ municipio.nombre }}</td>
+            <td>{{ municipio.departamento }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
