@@ -12,7 +12,7 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=20)
     direccion = models.CharField(max_length=255)
     zona = models.ForeignKey(ZonaCobro, on_delete=models.SET_NULL, null=True, related_name='clientes')
-    municipio = models.ForeignKey('bonanza_inventario.Municipio', on_delete=models.SET_NULL, null=True)
+    municipio = models.ForeignKey('inventario.Municipio', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.nombre} - {self.identificacion}"
