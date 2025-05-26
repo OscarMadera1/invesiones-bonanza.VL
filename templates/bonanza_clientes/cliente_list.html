@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-people"></i> Lista de Clientes</h2>
+        <a href="{% url 'bonanza_clientes:cliente_create' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Cliente</a>
+    </div>
+
+    <table id="clientesTable" class="table table-striped table-hover table-bordered nowrap" style="width:100%">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Identificación</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Zona</th>
+                <th>Municipio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.identificacion }}</td>
+                <td>{{ cliente.telefono }}</td>
+                <td>{{ cliente.direccion }}</td>
+                <td>{{ cliente.zona }}</td>
+                <td>{{ cliente.municipio }}</td>
+                <td>
+                    <a href="{% url 'bonanza_clientes:cliente_update' cliente.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'bonanza_clientes:cliente_delete' cliente.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready
