@@ -1,0 +1,20 @@
+<!-- templates/bonanza_inventario/form.html -->
+{% extends 'bonanza_inventario/base.html' %}
+
+{% block title %}Formulario{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Formulario</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
