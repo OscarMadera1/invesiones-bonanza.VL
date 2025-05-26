@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Historial de Pagos</h2>
+    <a href="{% url 'bonanza_cobros:pago_create' %}" class="btn btn-primary mb-3">Registrar Pago</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="pagoTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Cuota</th>
+                    <th>Valor Pagado</th>
+                    <th>Fecha</th>
+                    <th>Método</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in object_list %}
+                <tr>
+                    <td>{{ pago.id }}</td>
+                    <td>{{ pago.cuota.cliente.nombre }}</td>
+                    <td>#{{ pago.cuota.id }} - ${{ pago.cuota.valor }}</td>
+                    <td>${{ pago.valor_pagado|floatformat:0 }}</td>
+                    <td>{{ pago.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>{{ pago.metodo }}</td>
+                    <td>
+                        <a href="{% url 'bonanza_cobros:pago_update' pago.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'bonanza_cobros:pago_delete' pago.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+    new DataTable('#pagoTable');
+</script>
+{% endblock %}
