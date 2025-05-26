@@ -1,13 +1,13 @@
 from django.db import models
-from bonanza_clientes.models import Cliente
-from bonanza_empleados.models import Empleado
+from clientes.models import Cliente
+from empleados.models import Empleado
 from django.utils import timezone
 
 
 class RutaCobro(models.Model):
     nombre = models.CharField(max_length=100)
-    municipio = models.ForeignKey('bonanza_inventario.Municipio', on_delete=models.CASCADE)
-    zona = models.ForeignKey('bonanza_clientes.Zona', on_delete=models.SET_NULL, null=True, blank=True)
+    municipio = models.ForeignKey('inventario.Municipio', on_delete=models.CASCADE)
+    zona = models.ForeignKey('clientes.ZonaCobro', on_delete=models.SET_NULL, null=True, blank=True)
     cobrador = models.ForeignKey(Empleado, on_delete=models.CASCADE, limit_choices_to={'rol': 'cobrador'})
     fecha_programada = models.DateField()
 

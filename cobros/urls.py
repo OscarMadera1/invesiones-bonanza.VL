@@ -17,4 +17,8 @@ urlpatterns = [
     path('cuotas/eliminar/<int:pk>/', views.CuotaDeleteView.as_view(), name='cuota_delete'),
 
     # Rutas de Pago
-    path('pagos/', views.PagoListView.as_vi_
+    path('pagos/', views.PagoListView.as_view(), name='pago_list'),
+    path('pagos/crear/', views.PagoCreateView.as_view(), name='pago_create'),
+    path('pagos/editar/<int:pk>/', views.PagoUpdateView.as_view(), name='pago_update'),
+    path('pagos/eliminar/<int:pk>/', views.PagoDeleteView.as_view(), name='pago_delete'),
+]

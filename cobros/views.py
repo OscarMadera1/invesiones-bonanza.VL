@@ -55,4 +55,31 @@ class CuotaUpdateView(UpdateView):
 class CuotaDeleteView(DeleteView):
     model = Cuota
     template_name = 'bonanza_cobros/cuota_confirm_delete.html'
-    success_url = reverse_lazy('bonanza_co_
+    success_url = reverse_lazy('bonanza_cobros:cuota_list')
+
+
+# --- Pago ---
+class PagoListView(ListView):
+    model = Pago
+    template_name = 'bonanza_cobros/pago_list.html'
+    context_object_name = 'pagos'
+
+
+class PagoCreateView(CreateView):
+    model = Pago
+    form_class = PagoForm
+    template_name = 'bonanza_cobros/pago_form.html'
+    success_url = reverse_lazy('bonanza_cobros:pago_list')
+
+
+class PagoUpdateView(UpdateView):
+    model = Pago
+    form_class = PagoForm
+    template_name = 'bonanza_cobros/pago_form.html'
+    success_url = reverse_lazy('bonanza_cobros:pago_list')
+
+
+class PagoDeleteView(DeleteView):
+    model = Pago
+    template_name = 'bonanza_cobros/pago_confirm_delete.html'
+    success_url = reverse_lazy('bonanza_cobros:pago_list')

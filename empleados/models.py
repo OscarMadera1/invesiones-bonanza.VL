@@ -13,8 +13,9 @@ class Rol(models.Model):
         return self.nombre
 
 class Empleado(models.Model):
-    nombre = models.CharField(max_length=200)
     identificacion = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=200)
+    apellido = models.CharField(max_length=200)
     rol = models.ForeignKey(Rol, on_delete=models.PROTECT)
     municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT)
     activo = models.BooleanField(default=True)

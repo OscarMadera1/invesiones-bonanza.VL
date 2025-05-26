@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'clientes',
+    'cobros',
     'empleados',
     'inventario',
     'inversiones_bonanza',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'productos',
     'usuarios',
     'zonas',
+    'ventas'
 
 
 ]

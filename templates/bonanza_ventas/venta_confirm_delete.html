@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Confirmar eliminación de la venta #{{ venta.id }}</h2>
+<p>¿Está seguro de que desea eliminar esta venta?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <a href="{% url 'bonanza_ventas:venta_list' %}" class="btn btn-secondary">Cancelar</a>
+  <button type="submit" class="btn btn-danger">Eliminar</button>
+</form>
+{% endblock %}

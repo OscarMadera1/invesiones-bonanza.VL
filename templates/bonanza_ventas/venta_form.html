@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{% if object %}Editar Venta{% else %}Crear Venta{% endif %}</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        {{ form.cliente.label_tag }} 
+        {{ form.cliente }}
+        {{ form.cliente.errors }}
+      </div>
+      <div class="col-md-6">
+        {{ form.vendedor.label_tag }} 
+        {{ form.vendedor }}
+        {{ form.vendedor.errors }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        {{ form.descuento.label_tag }} 
+        {{ form.descuento }}
+        {{ form.descuento.errors }}
+      </div>
+      <div class="col-md-4">
+        {{ form.latitud.label_tag }} 
+        {{ form.latitud }}
+        {{ form.latitud.errors }}
+      </div>
+      <div class="col-md-4">
+        {{ form.longitud.label_tag }} 
+        {{ form.longitud }}
+        {{ form.longitud.errors }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        {{ form.estado.label_tag }} 
+        {{ form.estado }}
+        {{ form.estado.errors }}
+      </div>
+    </div>
+
+    <hr>
+
+    <h4>Detalles de la Venta</h4>
+
+    {{ detalles.management_form }}
+
+    <table class="table table-bordered" id="detalles-table">
+      <thead class="table-light">
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Subtotal</th>
+          <th><button type="button" id="add-row" class="btn btn-sm btn-success">+</button></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in detalles.forms %}
+        <tr class="detalle-row">
+          <td>{{ form.producto }}</td>
+          <td>{{ form.cantidad }}</td>
+          <td>{{ form.precio_unitario }}</td>
+          <td>{{ form.subtotal }}</td>
+          <td><button type="button" class="btn btn-sm btn-danger remove-row">−</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3" class="text-end">Total:</th>
+          <th><input type="text" id="total" class="form-control" readonly></th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Guardar Venta</button>
+    <a href="{% url 'bonanza_ventas:venta_list' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+  // Función para recalcular subtotal y total
+  function calcularTotales() {
+    let total = 0.0;
+    document.querySelectorAll('#detalles-table tbody tr').forEach(row => {
+      const cantidadInput = row.querySelector('input[name$="cantidad"]');
+      const precioInput = row.querySelector('input[name$="precio_unitario"]');
+      const subtotalInput = row.querySelector('input[name$="subtotal"]');
+
+      const cantidad = parseFloat(cantidadInput.value) || 0;
+      const precio = parseFloat(precioInput.value) || 0;
+      const subtotal = cantidad * precio;
+
+      subtotalInput.value = subtotal.toFixed(2);
+      total += subtotal;
+    });
+
+    // Aplicar descuento
+    const descuentoInput = document.querySelector('input[name="descuento"]');
+    let descuento = parseFloat(descuentoInput.value) || 0;
+    let totalFinal = total - descuento;
+    if (totalFinal < 0) totalFinal = 0;
+
+    document.getElementById('total').value = totalFinal.toFixed(2);
+  }
+
+  // Escuchar cambios para recalcular
+  document.addEventListener('input', e => {
+    if (
+      e.target.matches('input[name$="cantidad"]') ||
+      e.target.matches('input[name$="precio_unitario"]') ||
+      e.target.matches('input[name="descuento"]')
+    ) {
+      calcularTotales();
+    }
+  });
+
+  // Añadir fila nueva en el formset
+  document.getElementById('add-row').addEventListener('click', () => {
+    const tableBody = document.querySelector('#detalles-table tbody');
+    const totalForms = document.querySelector('input[name="detalles-TOTAL_FORMS"]');
+    const formCount = parseInt(totalForms.value);
+
+    // Clonar la última fila
+    const newRow = tableBody.lastElementChild.cloneNode(true);
+
+    // Limpiar valores
+    newRow.querySelectorAll('input, select').forEach(input => {
+      if (input.type === 'select-one') input.selectedIndex = 0;
+      else input.value = '';
+    });
+
+    // Actualizar los nombres de los inputs para el nuevo formset
+    newRow.querySelectorAll('input, select').forEach(input => {
+      input.name = input.name.replace(/-\d+-/, `-${formCount}-`);
+      input.id = input.id.replace(/-\d+-/, `-${formCount}-`);
+    });
+
+    tableBody.appendChild(newRow);
+
+    // Incrementar el TOTAL_FORMS
+    totalForms.value = formCount + 1;
+  });
+
+  // Eliminar fila de formset
+  document.querySelector('#detalles-table').addEventListener('click', e => {
+    if (e.target.classList.contains('remove-row')) {
+      const rows = document.querySelectorAll('#detalles-table tbody tr');
+      if (rows.length > 1) {
+        e.target.closest('tr').remove();
+        calcularTotales();
+        // Ajustar TOTAL_FORMS
+        const totalForms = document.querySelector('input[name="detalles-TOTAL_FORMS"]');
+        totalForms.value = rows.length - 1;
+      } else {
+        alert('Debe haber al menos una fila en los detalles.');
+      }
+    }
+  });
+
+  // Inicializar cálculo al cargar la página
+  window.onload = calcularTotales;
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      document.getElementById('id_latitud').value = position.coords.latitude;
+      document.getElementById('id_longitud').value = position.coords.longitude;
+    }, function (error) {
+      console.warn("No se pudo obtener la ubicación: ", error.message);
+    });
+  } else {
+    alert("Tu navegador no soporta geolocalización.");
+  }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Detalle Venta #{{ venta.id }}</h2>
+
+<p><strong>Cliente:</strong> {{ venta.cliente }}</p>
+<p><strong>Vendedor:</strong> {{ venta.vendedor }}</p>
+<p><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+<p><strong>Descuento:</strong> {{ venta.descuento }}%</p>
+<p><strong>Estado:</strong> {{ venta.estado }}</p>
+
+<h4>Productos</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Precio Unitario</th>
+      <th>Subtotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for detalle in venta.detalles.all %}
+    <tr>
+      <td>{{ detalle.producto }}</td>
+      <td>{{ detalle.cantidad }}</td>
+      <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
+      <td>${{ detalle.subtotal|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><strong>Total:</strong> ${{ venta.total|floatformat:2 }}</p>
+
+<div id="map" style="height: 300px;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var lat = {{ venta.latitud }};
+    var lon = {{ venta.longitud }};
+
+    var map = L.map('map').setView([lat, lon], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map)
+      .bindPopup('Ubicación de la venta')
+      .openPopup();
+  });
+</script>
+
+
+<a href="{% url 'bonanza_ventas:venta_list' %}" class="btn btn-secondary">Volver al listado</a>
+<a href="{% url 'bonanza_ventas:venta_editar' venta.pk %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'bonanza_ventas:venta_eliminar' venta.pk %}" class="btn btn-danger">Eliminar</a>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h2 class="mb-4">Mapa de Ventas</h2>
+
+<form method="get" class="row g-3 mb-4">
+<div class="row">
+  <div class="col-md-3 mb-2">
+    {{ form.fecha_inicio.label_tag }} {{ form.fecha_inicio }}
+  </div>
+  <div class="col-md-3 mb-2">
+    {{ form.fecha_fin.label_tag }} {{ form.fecha_fin }}
+  </div>
+  <div class="col-md-3 mb-2">
+    {{ form.vendedor.label_tag }} {{ form.vendedor }}
+  </div>
+  <div class="col-md-3 mb-2">
+    {{ form.municipio.label_tag }} {{ form.municipio }}
+  </div>
+  <div class="col-md-3 mb-2">
+    {{ form.zona.label_tag }} {{ form.zona }}
+  </div>
+  <div class="col-md-3 mb-2 align-self-end">
+    <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+  </div>
+</div>
+
+</form>
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Total de Ventas</h5>
+        <p class="card-text display-6">{{ total_ventas }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Valor Total Vendido</h5>
+        <p class="card-text display-6">$ {{ suma_total|floatformat:0 }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col-md-6">
+    <canvas id="graficoVendedor"></canvas>
+  </div>
+  <div class="col-md-6">
+    <canvas id="graficoFecha"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const dataVendedor = {
+    labels: {{ ventas_por_vendedor|map(attribute='vendedor__nombres')|list|safe }},
+    datasets: [{
+      label: 'Ventas por Vendedor',
+      data: {{ ventas_por_vendedor|map(attribute='total')|list|safe }},
+      backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  const configVendedor = {
+    type: 'bar',
+    data: dataVendedor,
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  };
+
+  new Chart(document.getElementById('graficoVendedor'), configVendedor);
+
+  const dataFecha = {
+    labels: {{ ventas_por_fecha|map(attribute='fecha_dia')|list|safe }},
+    datasets: [{
+      label: 'Ventas por Día',
+      data: {{ ventas_por_fecha|map(attribute='total')|list|safe }},
+      fill: false,
+      borderColor: 'rgba(255, 99, 132, 1)',
+      tension: 0.1
+    }]
+  };
+
+  const configFecha = {
+    type: 'line',
+    data: dataFecha,
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  };
+
+  new Chart(document.getElementById('graficoFecha'), configFecha);
+</script>
+
+
+<div id="map" style="height: 500px;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var map = L.map('map').setView([4.5709, -74.2973], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+
+    var ventas = {{ ventas|json_script:"ventas_data" }};
+
+    ventas.forEach(function (venta) {
+      if (venta.latitud && venta.longitud) {
+        L.marker([venta.latitud, venta.longitud])
+          .addTo(map)
+          .bindPopup(`
+            <strong>Cliente:</strong> ${venta.cliente}<br>
+            <strong>Vendedor:</strong> ${venta.vendedor}<br>
+            <strong>Total:</strong> $${venta.total}<br>
+            <a href="/ventas/${venta.id}/">Ver Detalle</a>
+          `);
+      }
+    });
+  });
+    $(document).ready(function() {
+    $('.select2').select2({
+      width: '100%',
+      placeholder: 'Seleccione una opción',
+      allowClear: true
+    });
+  });
+</script>
+{% endblock %}
