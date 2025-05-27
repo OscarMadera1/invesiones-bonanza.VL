@@ -34,8 +34,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    #apps propias
     'api',
     'clientes',
+    'cobros',
     'empleados',
     'inventario',
     'inversiones_bonanza',
@@ -43,6 +46,11 @@ INSTALLED_APPS = [
     'productos',
     'usuarios',
     'zonas',
+    'ventas',
+
+    #librerias externas
+    'crispy_forms',
+    'crispy_bootstrap5',
 
 
 ]
@@ -131,3 +139,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Configuraciones de Crispy-Bootstrap
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
