@@ -104,7 +104,6 @@
   new Chart(document.getElementById('graficoFecha'), configFecha);
 </script>
 
-
 <div id="map" style="height: 500px;"></div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -130,7 +129,9 @@
       }
     });
   });
-    $(document).ready(function() {
+</script>
+<script>
+  $(document).ready(function() {
     $('.select2').select2({
       width: '100%',
       placeholder: 'Seleccione una opción',
@@ -138,4 +139,5 @@
     });
   });
 </script>
+
 {% endblock %}

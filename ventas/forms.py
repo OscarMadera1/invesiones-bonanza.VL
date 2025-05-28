@@ -4,14 +4,6 @@ from empleados.models import Empleado
 from clientes.models import Cliente
 from inventario.models import Bodega
 
-class FiltroMapaVentasForm(forms.Form):
-    fecha_inicio = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    fecha_fin = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    vendedor = forms.ModelChoiceField(queryset=Empleado.objects.all(), required=False)
-    municipio = forms.CharField(max_length=100, required=False)
-    zona = forms.CharField(max_length=100, required=False)
-
-
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
@@ -45,7 +37,7 @@ class VentaForm(forms.ModelForm):
         return cleaned_data
 
 
-class VentaDetalleFormSet(forms.ModelForm):
+class VentaDetalleForm(forms.ModelForm):
     class Meta:
         model = VentaDetalle
         fields = ['producto', 'cantidad', 'precio_unitario', 'subtotal']
@@ -55,7 +47,6 @@ class VentaDetalleFormSet(forms.ModelForm):
             'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': 0}),
             'subtotal': forms.NumberInput(attrs={'class': 'form-control', 'readonly': True}),
         }
-
 
 class FiltroMapaVentasForm(forms.Form):
     fecha_inicio = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
@@ -77,3 +68,4 @@ class FiltroMapaVentasForm(forms.Form):
         self.fields['municipio'].widget.attrs.update({'class': 'form-select select2'})
         self.fields['zona'].widget.attrs.update({'class': 'form-select select2'})
         self.fields['vendedor'].widget.attrs.update({'class': 'form-select select2'})
+

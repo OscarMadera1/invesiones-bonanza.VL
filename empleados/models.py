@@ -21,4 +21,4 @@ class Empleado(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.nombre} - {self.rol}"
+        return f'{self.nombres} {self.apellidos}'
