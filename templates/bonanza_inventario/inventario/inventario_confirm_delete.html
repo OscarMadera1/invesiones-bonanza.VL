@@ -1,0 +1,12 @@
+{% extends "bonanza_inventario/base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>¿Eliminar inventario?</h2>
+    <p>¿Estás seguro de eliminar el inventario <strong>{{ inventario.nombre|upper }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'empleado_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
