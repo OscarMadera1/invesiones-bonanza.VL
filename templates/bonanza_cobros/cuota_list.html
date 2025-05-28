@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Cuotas Registradas</h2>
+    <a href="{% url 'bonanza_cobros:cuota_create' %}" class="btn btn-primary mb-3">Registrar Cuota</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="cuotaTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Fecha Pago</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuota in object_list %}
+                <tr>
+                    <td>{{ cuota.id }}</td>
+                    <td>{{ cuota.cliente.nombre }}</td>
+                    <td>${{ cuota.valor|floatformat:0 }}</td>
+                    <td>{{ cuota.fecha_pago|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="badge {% if cuota.estado == 'Pagado' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ cuota.estado }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'bonanza_cobros:cuota_update' cuota.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'bonanza_cobros:cuota_delete' cuota.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
