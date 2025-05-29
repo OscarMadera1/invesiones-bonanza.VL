@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Zonas registradas</h2>
+
+    <a href="{% url 'zonas:crear_zona' %}" class="btn btn-primary mb-3">Crear nueva zona</a>
+
+    <div class="table-responsive">
+        <table id="tablaZonas" class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Municipio</th>
+                    <th>Cobrador asignado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zona in zonas %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ zona.nombre }}</td>
+                    <td>{{ zona.municipio }}</td>
+                    <td>{{ zona.cobrador_asignado }}</td>
+                    <td>
+                        <a href="{% url 'zonas:editar_zona' zona.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'zonas:eliminar_zona' zona.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay zonas registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tablaZonas').DataTable({
+            language: {
+                url: "{% static 'js/es-es.json' %}"
+            }
+        });
+    });
+</script>
+{% endblock %}
