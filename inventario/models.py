@@ -8,7 +8,7 @@ class Categoria(models.Model):
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos')
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='productos')
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
@@ -22,14 +22,14 @@ class Municipio(models.Model):
 
 class Bodega(models.Model):
     nombre = models.CharField(max_length=100)
-    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE, related_name='bodegas')
+    municipio = models.ForeignKey(Municipio, on_delete=models.PROTECT, related_name='bodegas')
 
     def __str__(self):
         return f'{self.nombre} ({self.municipio})'
 
 class InventarioBodega(models.Model):
-    bodega = models.ForeignKey(Bodega, on_delete=models.CASCADE, related_name='inventario')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='inventarios')
+    bodega = models.ForeignKey(Bodega, on_delete=models.PROTECT, related_name='inventario')
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name='inventarios')
     cantidad = models.PositiveIntegerField()
     cantidad_minima = models.PositiveIntegerField()
 
