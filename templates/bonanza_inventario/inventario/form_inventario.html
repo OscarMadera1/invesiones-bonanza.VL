@@ -12,7 +12,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="{% url 'inventario_bodega' bodega.id %}" class="btn btn-secondary">Volver</a>
+            <a href="{% url 'inventario:inventario_bodega' bodega.id %}" class="btn btn-secondary">Volver</a>
         </form>
     </div>
 </div>

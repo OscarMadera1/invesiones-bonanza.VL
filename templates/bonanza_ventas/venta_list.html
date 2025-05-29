@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Listado de Ventas</h2>
-<a href="{% url 'bonanza_ventas:venta_crear' %}" class="btn btn-primary mb-3">Crear Nueva Venta</a>
+<a href="{% url 'ventas:venta_crear' %}" class="btn btn-primary mb-3">Crear Nueva Venta</a>
 
 <table class="table table-striped">
   <thead>
@@ -27,9 +27,9 @@
       <td>${{ venta.total|floatformat:2 }}</td>
       <td>{{ venta.estado }}</td>
       <td>
-        <a href="{% url 'bonanza_ventas:venta_detalle' venta.pk %}" class="btn btn-sm btn-info">Ver</a>
-        <a href="{% url 'bonanza_ventas:venta_editar' venta.pk %}" class="btn btn-sm btn-warning">Editar</a>
-        <a href="{% url 'bonanza_ventas:venta_eliminar' venta.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+        <a href="{% url 'ventas:venta_detalle' venta.pk %}" class="btn btn-sm btn-info">Ver</a>
+        <a href="{% url 'ventas:venta_editar' venta.pk %}" class="btn btn-sm btn-warning">Editar</a>
+        <a href="{% url 'ventas:venta_eliminar' venta.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
       </td>
     </tr>
     {% empty %}

@@ -55,8 +55,8 @@
 </script>
 
 
-<a href="{% url 'bonanza_ventas:venta_list' %}" class="btn btn-secondary">Volver al listado</a>
-<a href="{% url 'bonanza_ventas:venta_editar' venta.pk %}" class="btn btn-warning">Editar</a>
-<a href="{% url 'bonanza_ventas:venta_eliminar' venta.pk %}" class="btn btn-danger">Eliminar</a>
+<a href="{% url 'ventas:venta_list' %}" class="btn btn-secondary">Volver al listado</a>
+<a href="{% url 'ventas:venta_editar' venta.pk %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'ventas:venta_eliminar' venta.pk %}" class="btn btn-danger">Eliminar</a>
 
 {% endblock %}

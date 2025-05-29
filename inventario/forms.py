@@ -39,8 +39,9 @@ class BodegaForm(forms.ModelForm):
 class InventarioBodegaForm(forms.ModelForm):
     class Meta:
         model = InventarioBodega
-        fields = ['producto', 'cantidad']
+        fields = ['producto', 'cantidad','cantidad_minima']
         widgets = {
             'producto': forms.Select(attrs={'class': 'form-select'}),
             'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad en stock'}),
+            'cantidad minima': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad minima en stock'}),
         }

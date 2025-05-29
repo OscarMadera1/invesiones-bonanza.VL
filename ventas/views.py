@@ -5,8 +5,7 @@ from django.forms import inlineformset_factory
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from .models import Venta, VentaDetalle
-from .forms import VentaForm, VentaDetalleForm
-from .forms import FiltroMapaVentasForm
+from .forms import FiltroMapaVentasForm, VentaForm, VentaDetalleForm
 from datetime import datetime
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate
@@ -72,9 +71,9 @@ class VentaCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['detalle_formset'] = DetalleVentaFormSet(self.request.POST)
+            context['detalle_formset'] = VentaDetalleForm(self.request.POST)
         else:
-            context['detalle_formset'] = DetalleVentaFormSet()
+            context['detalle_formset'] = VentaDetalleForm()
         return context
 
     def form_valid(self, form):
@@ -111,9 +110,9 @@ class VentaUpDateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['detalle_formset'] = DetalleVentaFormSet(self.request.POST)
+            context['detalle_formset'] = DetalleVentaForm(self.request.POST)
         else:
-            context['detalle_formset'] = DetalleVentaFormSet()
+            context['detalle_formset'] = DetalleVentaForm()
         return context
 
     def form_valid(self, form):

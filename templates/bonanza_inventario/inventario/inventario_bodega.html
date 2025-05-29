@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>Inventario - {{ bodega.nombre }}</h2>
-<a href="{% url 'crear_inventario_bodega' bodega.id %}" class="btn btn-primary mb-3">Agregar Producto</a>
+<a href="{% url 'inventario:crear_inventario_bodega' bodega.id %}" class="btn btn-primary mb-3">Agregar Producto</a>
 <table class="table table-bordered table-striped datatable">
     <thead class="table-dark">
         <tr>
