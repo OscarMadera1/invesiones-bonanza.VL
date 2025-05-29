@@ -1,32 +1,29 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Empleado
 from .forms import EmpleadoForm
 
-def empleado_list(request):
+def lista_empleados(request):
     empleados = Empleado.objects.all()
-    return render(request, 'bonanza_empleados/empleado_list.html', {'empleados': empleados})
+    return render(request, 'bonanza_empleados/lista_empleados.html', {'empleados': empleados})
 
-def empleado_create(request):
-    if request.method == 'POST':
-        form = EmpleadoForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('empleado_list')
-    else:
-        form = EmpleadoForm()
-    return render(request, 'bonanza_empleados/empleado_form.html', {'form': form})
+def crear_empleado(request):
+    form = EmpleadoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('empleados:lista_empleados')
+    return render(request, 'bonanza_empleados/form_empleado.html', {'form': form})
 
-def empleado_update(request, pk):
-    empleado = get_object_or_404(Empleado, pk=pk)
+def editar_empleado(request, empleado_id):
+    empleado = get_object_or_404(Empleado, id=empleado_id)
     form = EmpleadoForm(request.POST or None, instance=empleado)
     if form.is_valid():
         form.save()
-        return redirect('empleado_list')
-    return render(request, 'bonanza_empleados/empleado_form.html', {'form': form})
+        return redirect('empleados:lista_empleados')
+    return render(request, 'bonanza_empleados/form_empleado.html', {'form': form})
 
-def empleado_delete(request, pk):
-    empleado = get_object_or_404(Empleado, pk=pk)
+def eliminar_empleado(request, empleado_id):
+    empleado = get_object_or_404(Empleado, id=empleado_id)
     if request.method == 'POST':
         empleado.delete()
-        return redirect('empleado_list')
-    return render(request, 'bonanza_empleados/empleado_confirm_delete.html', {'empleado': empleado})
+        return redirect('empleados:lista_empleados')
+    return render(request, 'bonanza_empleados/confirmar_eliminar.html', {'obj': empleado})

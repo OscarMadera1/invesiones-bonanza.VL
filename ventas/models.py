@@ -5,7 +5,7 @@ from inventario.models import Producto
 
 
 class Venta(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='ventas')
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='ventas')
     vendedor = models.ForeignKey(Empleado, on_delete=models.SET_NULL, null=True, blank=True,
                                  related_name='ventas_realizadas')
     fecha_venta = models.DateTimeField(auto_now_add=True)
@@ -21,8 +21,8 @@ class Venta(models.Model):
 
 
 class VentaDetalle(models.Model):
-    venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='detalles')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    venta = models.ForeignKey(Venta, on_delete=models.PROTECT, related_name='detalles')
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2)

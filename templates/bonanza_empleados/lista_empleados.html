@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Empleados</h2>
+    <a href="{% url 'empleados:crear_empleado' %}" class="btn btn-primary mb-3">Nuevo Empleado</a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="tabla-empleados">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Identificación</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th>Tipo</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empleado in empleados %}
+                <tr>
+                    <td>{{ empleado.id }}</td>
+                    <td>{{ empleado.nombre }}</td>
+                    <td>{{ empleado.identificacion }}</td>
+                    <td>{{ empleado.telefono }}</td>
+                    <td>{{ empleado.direccion }}</td>
+                    <td>{{ empleado.get_tipo_display }}</td>
+                    <td>{{ empleado.activo|yesno:"Sí,No" }}</td>
+                    <td>
+                        <a href="{% url 'empleados:editar_empleado' empleado.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'empleados:eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No hay empleados registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tabla-empleados').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+        });
+    });
+</script>
+{% endblock %}

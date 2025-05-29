@@ -7,8 +7,8 @@ from django.utils import timezone
 class RutaCobro(models.Model):
     nombre = models.CharField(max_length=100)
     municipio = models.ForeignKey('inventario.Municipio', on_delete=models.CASCADE)
-    zona = models.ForeignKey('clientes.ZonaCobro', on_delete=models.SET_NULL, null=True, blank=True)
-    cobrador = models.ForeignKey(Empleado, on_delete=models.CASCADE, limit_choices_to={'rol': 'cobrador'})
+    zona = models.ForeignKey('zonas.Zona', on_delete=models.SET_NULL, null=True, blank=True)
+    cobrador = models.ForeignKey(Empleado, on_delete=models.PROTECT, limit_choices_to={'tipo': 'cobrador'})
     fecha_programada = models.DateField()
 
     def __str__(self):
@@ -16,7 +16,7 @@ class RutaCobro(models.Model):
 
 
 class Cuota(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_vencimiento = models.DateField()
     pagado = models.BooleanField(default=False)
@@ -26,8 +26,8 @@ class Cuota(models.Model):
 
 
 class Pago(models.Model):
-    cuota = models.ForeignKey(Cuota, on_delete=models.CASCADE)
-    cobrador = models.ForeignKey(Empleado, on_delete=models.CASCADE, limit_choices_to={'rol': 'cobrador'})
+    cuota = models.ForeignKey(Cuota, on_delete=models.PROTECT)
+    cobrador = models.ForeignKey(Empleado, on_delete=models.CASCADE, limit_choices_to={'tipo': 'cobrador'})
     monto_pagado = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pago = models.DateTimeField(default=timezone.now)
     observaciones = models.TextField(blank=True, null=True)
