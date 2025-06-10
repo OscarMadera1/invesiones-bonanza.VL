@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 <h2>Listado de Ventas</h2>
 <a href="{% url 'ventas:venta_crear' %}" class="btn btn-primary mb-3">Crear Nueva Venta</a>
@@ -22,7 +24,7 @@
       <td>{{ venta.id }}</td>
       <td>{{ venta.cliente }}</td>
       <td>{{ venta.vendedor }}</td>
-      <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+      <td>{{ venta.fecha_venta|date:"d/m/Y H:i" }}</td>
       <td>{{ venta.descuento }}%</td>
       <td>${{ venta.total|floatformat:2 }}</td>
       <td>{{ venta.estado }}</td>

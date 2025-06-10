@@ -4,28 +4,28 @@
 <h2 class="mb-4">Mapa de Ventas</h2>
 
 <form method="get" class="row g-3 mb-4">
-<div class="row">
-  <div class="col-md-3 mb-2">
-    {{ form.fecha_inicio.label_tag }} {{ form.fecha_inicio }}
+  <div class="row">
+    <div class="col-md-3 mb-2">
+      {{ form.fecha_inicio.label_tag }} {{ form.fecha_inicio }}
+    </div>
+    <div class="col-md-3 mb-2">
+      {{ form.fecha_fin.label_tag }} {{ form.fecha_fin }}
+    </div>
+    <div class="col-md-3 mb-2">
+      {{ form.vendedor.label_tag }} {{ form.vendedor }}
+    </div>
+    <div class="col-md-3 mb-2">
+      {{ form.municipio.label_tag }} {{ form.municipio }}
+    </div>
+    <div class="col-md-3 mb-2">
+      {{ form.zona.label_tag }} {{ form.zona }}
+    </div>
+    <div class="col-md-3 mb-2 align-self-end">
+      <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+    </div>
   </div>
-  <div class="col-md-3 mb-2">
-    {{ form.fecha_fin.label_tag }} {{ form.fecha_fin }}
-  </div>
-  <div class="col-md-3 mb-2">
-    {{ form.vendedor.label_tag }} {{ form.vendedor }}
-  </div>
-  <div class="col-md-3 mb-2">
-    {{ form.municipio.label_tag }} {{ form.municipio }}
-  </div>
-  <div class="col-md-3 mb-2">
-    {{ form.zona.label_tag }} {{ form.zona }}
-  </div>
-  <div class="col-md-3 mb-2 align-self-end">
-    <button class="btn btn-primary w-100" type="submit">Filtrar</button>
-  </div>
-</div>
-
 </form>
+
 <div class="row mb-4">
   <div class="col-md-6">
     <div class="card shadow-sm">
@@ -44,6 +44,7 @@
     </div>
   </div>
 </div>
+
 <div class="row mb-4">
   <div class="col-md-6">
     <canvas id="graficoVendedor"></canvas>
@@ -53,13 +54,14 @@
   </div>
 </div>
 
+<!-- Scripts para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const dataVendedor = {
-    labels: {{ ventas_por_vendedor|map(attribute='vendedor__nombres')|list|safe }},
+    labels: {{ labels_vendedor|safe }},
     datasets: [{
       label: 'Ventas por Vendedor',
-      data: {{ ventas_por_vendedor|map(attribute='total')|list|safe }},
+      data: {{ data_vendedor|safe }},
       backgroundColor: 'rgba(54, 162, 235, 0.6)',
       borderColor: 'rgba(54, 162, 235, 1)',
       borderWidth: 1
@@ -71,19 +73,16 @@
     data: dataVendedor,
     options: {
       responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   };
-
   new Chart(document.getElementById('graficoVendedor'), configVendedor);
 
   const dataFecha = {
-    labels: {{ ventas_por_fecha|map(attribute='fecha_dia')|list|safe }},
+    labels: {{ labels_fecha|safe }},
     datasets: [{
       label: 'Ventas por Día',
-      data: {{ ventas_por_fecha|map(attribute='total')|list|safe }},
+      data: {{ data_fecha|safe }},
       fill: false,
       borderColor: 'rgba(255, 99, 132, 1)',
       tension: 0.1
@@ -95,26 +94,32 @@
     data: dataFecha,
     options: {
       responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   };
-
   new Chart(document.getElementById('graficoFecha'), configFecha);
 </script>
 
-<div id="map" style="height: 500px;"></div>
+<!-- Mapa de Leaflet -->
+<div id="map" style="height: 500px;" class="mb-4"></div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<!-- Datos serializados -->
+<script id="ventas_data" type="application/json">
+  {{ ventas_json|safe }}
+</script>
+
+<!-- Script para mapa -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var map = L.map('map').setView([4.5709, -74.2973], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
 
-    var ventas = {{ ventas|json_script:"ventas_data" }};
+    var ventas = JSON.parse(document.getElementById('ventas_data').textContent);
 
     ventas.forEach(function (venta) {
       if (venta.latitud && venta.longitud) {
@@ -130,8 +135,10 @@
     });
   });
 </script>
+
+<!-- Select2 para filtros (si los estás usando) -->
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('.select2').select2({
       width: '100%',
       placeholder: 'Seleccione una opción',

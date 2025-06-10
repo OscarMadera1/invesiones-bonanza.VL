@@ -9,6 +9,18 @@ from .forms import FiltroMapaVentasForm, VentaForm, VentaDetalleForm
 from datetime import datetime
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncDate
+from django.forms import formset_factory
+from inventario.models import Producto,Municipio
+from zonas.models import Zona
+from django.shortcuts import render, redirect, get_object_or_404
+import sweetify
+from decimal import Decimal
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+
+VentaDetalleFormSet = formset_factory(VentaDetalleForm, extra=1)
+
+
 
 class MapaVentasView(LoginRequiredMixin, TemplateView):
     template_name = 'bonanza_ventas/mapa_ventas.html'
@@ -32,19 +44,59 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
             if vendedor:
                 ventas = ventas.filter(vendedor=vendedor)
             if municipio:
-                ventas = ventas.filter(municipio__icontains=municipio)
+                try:
+                    municipio_obj = Municipio.objects.get(id=municipio)
+                    ventas = ventas.filter(municipio=municipio_obj)
+                except Municipio.DoesNotExist:
+                    pass
+
             if zona:
-                ventas = ventas.filter(zona__icontains=zona)
+                try:
+                    zona_obj = Zona.objects.get(id=zona)
+                    ventas = ventas.filter(zona=zona_obj)
+                except Zona.DoesNotExist:
+                    pass
 
         # Estadísticas
         total_ventas = ventas.count()
         suma_total = ventas.aggregate(total=Sum('total'))['total'] or 0
 
-        ventas_por_vendedor = ventas.values('vendedor__nombres').annotate(total=Sum('total')).order_by('-total')
-        ventas_por_fecha = ventas.annotate(fecha_dia=TruncDate('fecha')) \
+        # Agrupación para gráficos
+        ventas_por_vendedor = ventas.values('vendedor__nombre') \
+                                    .annotate(total=Sum('total')) \
+                                    .order_by('-total')
+
+        ventas_por_fecha = ventas.annotate(fecha_dia=TruncDate('fecha_venta')) \
                                  .values('fecha_dia') \
                                  .annotate(total=Sum('total')) \
                                  .order_by('fecha_dia')
+
+        # Serializar datos relevantes para el mapa
+        ventas_serializadas = [
+            {
+                'id': v.id,
+                'latitud': v.latitud,
+                'longitud': v.longitud,
+                'cliente': v.cliente.nombre,
+                'vendedor': v.vendedor.nombre,
+                'total': float(v.total),
+            }
+            for v in ventas
+            if v.latitud and v.longitud
+        ]
+
+        # Totales y estadísticas
+        total_ventas = ventas.count()
+        suma_total = ventas.aggregate(Sum('total'))['total__sum'] or 0
+
+        # Gráficos
+        ventas_por_vendedor = ventas.values('vendedor__nombre').annotate(total=Sum('total'))
+        labels_vendedor = [v['vendedor__nombre'] for v in ventas_por_vendedor]
+        data_vendedor = [float(v['total']) for v in ventas_por_vendedor]
+
+        ventas_por_fecha = ventas.values('fecha_venta').annotate(total=Sum('total')).order_by('fecha_venta')
+        labels_fecha = [v['fecha_venta'].strftime('%Y-%m-%d') for v in ventas_por_fecha]
+        data_fecha = [float(v['total']) for v in ventas_por_fecha]
 
         context.update({
             'form': form,
@@ -53,6 +105,12 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
             'suma_total': suma_total,
             'ventas_por_vendedor': list(ventas_por_vendedor),
             'ventas_por_fecha': list(ventas_por_fecha),
+            'labels_vendedor': json.dumps(labels_vendedor, cls=DjangoJSONEncoder),
+            'data_vendedor': json.dumps(data_vendedor, cls=DjangoJSONEncoder),
+            'labels_fecha': json.dumps(labels_fecha, cls=DjangoJSONEncoder),
+            'data_fecha': json.dumps(data_fecha, cls=DjangoJSONEncoder),
+            'ventas_json': json.dumps(ventas_serializadas, cls=DjangoJSONEncoder),
+
         })
         return context
 
@@ -62,88 +120,183 @@ class VentaListView(ListView):
     context_object_name = 'ventas'
     paginate_by = 10
 
-class VentaCreateView(LoginRequiredMixin, CreateView):
-    model = Venta
-    form_class = VentaForm
+
+
+class VentaCreateView(LoginRequiredMixin, View):
     template_name = 'bonanza_ventas/venta_form.html'
     success_url = reverse_lazy('ventas:venta_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['detalle_formset'] = VentaDetalleForm(self.request.POST)
-        else:
-            context['detalle_formset'] = VentaDetalleForm()
-        return context
+    def get(self, request, *args, **kwargs):
+        form = VentaForm()
+        #formset = VentaDetalleFormSet()
+        productos = Producto.objects.all()
+        return render(request, self.template_name, {
+            'form': form,
+            #'formset': formset,
+            'productos': productos
+        })
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        detalle_formset = context['detalle_formset']
-        if detalle_formset.is_valid():
-            form.instance.usuario_creador = self.request.user
-            self.object = form.save(commit=False)
+    def post(self, request, *args, **kwargs):
+        form = VentaForm(request.POST)
+        productos = Producto.objects.all()
+        detalles = self._obtener_detalles_desde_post(request.POST)
 
-            total = 0
-            for detalle in detalle_formset:
-                producto = detalle.cleaned_data.get('producto')
-                cantidad = detalle.cleaned_data.get('cantidad')
-                if producto and cantidad:
-                    total += producto.precio * cantidad
+        if form.is_valid() and detalles:
+            venta = form.save(commit=False)
+            total = sum(Decimal(str(d['subtotal'])) for d in detalles)
+            descuento = form.cleaned_data.get('descuento') or Decimal('0')
+            venta.total = total * (Decimal('1') - (descuento / Decimal('100')))
+            venta.save()
 
-            descuento = form.cleaned_data.get('descuento') or 0
-            self.object.total = total * (1 - descuento / 100)
-            self.object.save()
+            for d in detalles:
+                VentaDetalle.objects.create(
+                    venta=venta,
+                    producto=d['producto'],
+                    cantidad=int(d['cantidad']),
+                    precio_unitario=float(d['precio']),
+                    subtotal=float(d['subtotal']),
+                )
 
-            detalle_formset.instance = self.object
-            detalle_formset.save()
-
+            sweetify.success(
+                request,
+                title="¡Venta exitosa!",
+                text="La venta fue registrada correctamente.",
+                timer=3000
+            )
             return redirect(self.success_url)
-        else:
-            return self.form_invalid(form)
 
-class VentaUpDateView(LoginRequiredMixin, UpdateView):
-    model = Venta
-    form_class = VentaForm
-    template_name = 'bonanza_ventas/venta_form.html'
+        sweetify.error(
+            request,
+            title="Error en el formulario",
+            text="Por favor revisa los campos e intenta de nuevo.",
+            timer=3000
+        )
+        return render(request, self.template_name, {
+            'form': form,
+            'productos': productos
+        })
+
+    def _obtener_detalles_desde_post(self, post_data):
+        productos = post_data.getlist('producto[]')
+        cantidades = post_data.getlist('cantidad[]')
+        precios = post_data.getlist('precio[]')
+        subtotales = post_data.getlist('subtotal[]')
+
+        detalles = []
+        for i in range(len(productos)):
+            try:
+                producto = Producto.objects.get(pk=productos[i])
+                cantidad = int(cantidades[i])
+                precio = float(precios[i])
+                subtotal = float(subtotales[i])
+                if cantidad > 0 and precio >= 0:
+                    detalles.append({
+                        'producto': producto,
+                        'cantidad': cantidad,
+                        'precio': precio,
+                        'subtotal': subtotal,
+                    })
+            except (Producto.DoesNotExist, ValueError):
+                continue
+        return detalles
+
+class VentaUpdateView(LoginRequiredMixin, View):
+    template_name = 'bonanza_ventas/venta_edit.html'
     success_url = reverse_lazy('ventas:venta_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['detalle_formset'] = DetalleVentaForm(self.request.POST)
-        else:
-            context['detalle_formset'] = DetalleVentaForm()
-        return context
+    def get(self, request, pk, *args, **kwargs):
+        venta = get_object_or_404(Venta, pk=pk)
+        form = VentaForm(instance=venta)
+        productos = Producto.objects.all()
+        detalles_qs = VentaDetalle.objects.filter(venta=venta)
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        detalle_formset = context['detalle_formset']
-        if detalle_formset.is_valid():
-            form.instance.usuario_creador = self.request.user
-            self.object = form.save(commit=False)
+        detalles = []
+        for d in detalles_qs:
+            detalles.append({
+                'producto_id': d.producto.id,
+                'cantidad': d.cantidad,
+                'precio': format(d.precio_unitario, '.2f'),
+                'subtotal': format(d.subtotal, '.2f'),
+            })
+        print(detalles)
+        return render(request, self.template_name, {
+            'form': form,
+            'productos': productos,
+            'detalles': detalles,
+            'venta': venta,
+        })
 
-            total = 0
-            for detalle in detalle_formset:
-                producto = detalle.cleaned_data.get('producto')
-                cantidad = detalle.cleaned_data.get('cantidad')
-                if producto and cantidad:
-                    total += producto.precio * cantidad
+    def post(self, request, pk, *args, **kwargs):
+        venta = get_object_or_404(Venta, pk=pk)
+        form = VentaForm(request.POST, instance=venta)
+        productos = Producto.objects.all()
+        detalles = self._obtener_detalles_desde_post(request.POST)
 
-            descuento = form.cleaned_data.get('descuento') or 0
-            self.object.total = total * (1 - descuento / 100)
-            self.object.save()
+        if form.is_valid() and detalles:
+            venta = form.save(commit=False)
+            total = sum(Decimal(str(d['subtotal'])) for d in detalles)
+            descuento = form.cleaned_data.get('descuento') or Decimal('0')
+            venta.total = total * (Decimal('1') - (descuento / Decimal('100')))
+            venta.save()
 
-            detalle_formset.instance = self.object
-            detalle_formset.save()
-
+            VentaDetalle.objects.filter(venta=venta).delete()
+            for d in detalles:
+                VentaDetalle.objects.create(
+                    venta=venta,
+                    producto=d['producto'],
+                    cantidad=d['cantidad'],
+                    precio_unitario=d['precio'],
+                    subtotal=d['subtotal'],
+                )
+            sweetify.success(
+                request,
+                title="¡Venta exitosa!",
+                text="La venta fue actualizada correctamente.",
+                persistent="ok"
+            )
             return redirect(self.success_url)
-        else:
-            return self.form_invalid(form)
+
+        sweetify.error(
+            request,
+            title="Error en el formulario",
+            text="Por favor revisa los campos e intenta de nuevo.",
+            timer=3000
+        )
+        return render(request, self.template_name, {
+            'form': form,
+            'productos': productos,
+            'venta': venta,
+            'detalles': detalles,
+        })
+
+    def _obtener_detalles_desde_post(self, post_data):
+        productos = post_data.getlist('producto')
+        cantidades = post_data.getlist('cantidad')
+        precios = post_data.getlist('precio')
+        subtotales = post_data.getlist('subtotal')
+
+        detalles = []
+        for i in range(len(productos)):
+            try:
+                producto = Producto.objects.get(pk=productos[i])
+                cantidad = int(cantidades[i])
+                precio = float(precios[i])
+                subtotal = float(subtotales[i])
+                if cantidad > 0 and precio >= 0:
+                    detalles.append({
+                        'producto': producto,
+                        'cantidad': cantidad,
+                        'precio': precio,
+                        'subtotal': subtotal,
+                    })
+            except (Producto.DoesNotExist, ValueError):
+                continue
+        return detalles
 
 class VentaDeleteView(DeleteView):
     model = Venta
     template_name = 'bonanza_ventas/venta_confirm_delete.html'
-    success_url = reverse_lazy('bonanza_ventas:venta_list')
+    success_url = reverse_lazy('ventas:venta_list')
 
 class VentaDetailView(DetailView):
     model = Venta

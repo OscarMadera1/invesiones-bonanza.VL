@@ -2,19 +2,25 @@ from django import forms
 from .models import Venta, VentaDetalle
 from empleados.models import Empleado
 from clientes.models import Cliente
-from inventario.models import Bodega
+from inventario.models import Bodega, Municipio
+from zonas.models import Zona
+
 
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = ['cliente', 'vendedor', 'descuento', 'latitud', 'longitud', 'estado']
+        fields = ['cliente', 'vendedor','descuento', 'latitud', 'longitud',  'municipio', 'zona','total', 'estado']
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-select'}),
             'vendedor': forms.Select(attrs={'class': 'form-select'}),
             'descuento': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': 0}),
-            'latitud': forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
-            'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+            'municipio': forms.Select(attrs={'class': 'form-select'}),
+            'zona': forms.Select(attrs={'class': 'form-select'}),
+            'latitud': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control', 'step': 'any', 'id': 'id_latitud'}),
+            'longitud': forms.NumberInput(attrs={'readonly': 'readonly', 'class': 'form-control', 'step': 'any', 'id': 'id_longitud'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
+            'total': forms.HiddenInput(),
+
         }
 
     def clean_descuento(self):
@@ -59,13 +65,27 @@ class FiltroMapaVentasForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        municipios = Venta.objects.values_list('municipio', flat=True).distinct().order_by('municipio')
-        zonas = Venta.objects.values_list('zona', flat=True).distinct().order_by('zona')
+        # Filtrar solo los municipios y zonas que están presentes en ventas
+        municipios_ids = Venta.objects.values_list('municipio', flat=True).distinct()
+        zonas_ids = Venta.objects.values_list('zona', flat=True).distinct()
 
-        self.fields['municipio'].choices = [('', 'Todos')] + [(m, m) for m in municipios if m]
-        self.fields['zona'].choices = [('', 'Todas')] + [(z, z) for z in zonas if z]
+        municipios = Municipio.objects.filter(id__in=municipios_ids).order_by('nombre')
+        zonas = Zona.objects.filter(id__in=zonas_ids).order_by('nombre')
+
+        self.fields['municipio'].choices = [('', 'Todos')] + [(m.id, str(m)) for m in municipios]
+        self.fields['zona'].choices = [('', 'Todas')] + [(z.id, str(z)) for z in zonas]
 
         self.fields['municipio'].widget.attrs.update({'class': 'form-select select2'})
         self.fields['zona'].widget.attrs.update({'class': 'form-select select2'})
         self.fields['vendedor'].widget.attrs.update({'class': 'form-select select2'})
 
+
+
+from django.forms import inlineformset_factory
+
+VentaDetalleFormSet = inlineformset_factory(
+    Venta, VentaDetalle,
+    form=VentaDetalleForm,
+    extra=1,
+    can_delete=True
+)

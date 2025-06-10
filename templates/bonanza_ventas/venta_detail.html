@@ -4,56 +4,57 @@
 
 <p><strong>Cliente:</strong> {{ venta.cliente }}</p>
 <p><strong>Vendedor:</strong> {{ venta.vendedor }}</p>
-<p><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+<p><strong>Fecha:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}</p>
 <p><strong>Descuento:</strong> {{ venta.descuento }}%</p>
 <p><strong>Estado:</strong> {{ venta.estado }}</p>
 
 <h4>Productos</h4>
 <table class="table table-bordered">
-  <thead>
+    <thead>
     <tr>
-      <th>Producto</th>
-      <th>Cantidad</th>
-      <th>Precio Unitario</th>
-      <th>Subtotal</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Subtotal</th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     {% for detalle in venta.detalles.all %}
     <tr>
-      <td>{{ detalle.producto }}</td>
-      <td>{{ detalle.cantidad }}</td>
-      <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
-      <td>${{ detalle.subtotal|floatformat:2 }}</td>
+        <td>{{ detalle.producto }}</td>
+        <td>{{ detalle.cantidad }}</td>
+        <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
+        <td>${{ detalle.subtotal|floatformat:2 }}</td>
     </tr>
     {% endfor %}
-  </tbody>
+    </tbody>
 </table>
 
 <p><strong>Total:</strong> ${{ venta.total|floatformat:2 }}</p>
-
+{% if venta.latitud and venta.longitud %}
 <div id="map" style="height: 300px;"></div>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% block extra_js %}
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var lat = {{ venta.latitud }};
-    var lon = {{ venta.longitud }};
+    document.addEventListener('DOMContentLoaded', function () {
+      var lat = {{ venta.latitud|stringformat:"f"|default:"null" }};
+      var lon = {{ venta.longitud|stringformat:"f"|default:"null" }};
 
-    var map = L.map('map').setView([lat, lon], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(map);
-
-    L.marker([lat, lon]).addTo(map)
-      .bindPopup('Ubicación de la venta')
-      .openPopup();
+      if (lat !== null && lon !== null) {
+          var map = L.map('map').setView([lat, lon], 15);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              maxZoom: 19,
+          }).addTo(map);
+          L.marker([lat, lon]).addTo(map)
+              .bindPopup('Ubicación de la venta')
+              .openPopup();
+      }
   });
 </script>
-
+{% endblock %}
+{% else %}
+<p><em>No hay ubicación registrada para esta venta.</em></p>
+{% endif %}
 
 <a href="{% url 'ventas:venta_list' %}" class="btn btn-secondary">Volver al listado</a>
 <a href="{% url 'ventas:venta_editar' venta.pk %}" class="btn btn-warning">Editar</a>
