@@ -69,7 +69,7 @@ class FiltroMapaVentasForm(forms.Form):
         municipios_ids = Venta.objects.values_list('municipio', flat=True).distinct()
         zonas_ids = Venta.objects.values_list('zona', flat=True).distinct()
 
-        municipios = Municipio.objects.filter(id__in=municipios_ids).order_by('nombre')
+        municipios = Municipio.objects.filter(id__in=municipios_ids).order_by('id')
         zonas = Zona.objects.filter(id__in=zonas_ids).order_by('nombre')
 
         self.fields['municipio'].choices = [('', 'Todos')] + [(m.id, str(m)) for m in municipios]

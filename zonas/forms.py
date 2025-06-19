@@ -7,4 +7,5 @@ class ZonaForm(forms.ModelForm):
         fields = ['nombre', 'municipio', 'descripcion', 'cobrador_asignado']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3}),
+            'municipio': forms.Select(attrs={'class':'form-control'})
         }

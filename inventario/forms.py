@@ -34,7 +34,7 @@ class BodegaForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la bodega'}),
             'municipio': forms.Select(attrs={'class': 'form-select'}),
-        }
+            }
 
 class InventarioBodegaForm(forms.ModelForm):
     class Meta:

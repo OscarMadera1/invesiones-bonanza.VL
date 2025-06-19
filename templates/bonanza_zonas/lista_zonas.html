@@ -3,12 +3,13 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Zonas registradas</h2>
-
-    <a href="{% url 'zonas:crear_zona' %}" class="btn btn-primary mb-3">Crear nueva zona</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-map-marked-alt mb-4"></i> Zonas registradas</h2>
+        <a href="{% url 'zonas:crear_zona' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo zona</a>
+    </div>
 
     <div class="table-responsive">
-        <table id="tablaZonas" class="table table-bordered table-striped">
+        <table id="tablaZonas" class="table table-hover table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
@@ -26,8 +27,8 @@
                     <td>{{ zona.municipio }}</td>
                     <td>{{ zona.cobrador_asignado }}</td>
                     <td>
-                        <a href="{% url 'zonas:editar_zona' zona.id %}" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="{% url 'zonas:eliminar_zona' zona.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                        <a href="{% url 'zonas:editar_zona' zona.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{% url 'zonas:eliminar_zona' zona.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
                 {% empty %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Formulario Proveedores{% endblock %}
+
+{% block content %}
+<div class="container mt-4 form-control">
+    <h2><i class="bi bi-person-lines-fill"></i> {% if form.instance.pk %}Editar proveedor{% else %}Nuevo Proveedor{% endif %}</h2>
+    <form method="post" class="card p-4 shadow-sm mt-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'proveedores:lista_proveedores' %}" class="btn btn-secondary me-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

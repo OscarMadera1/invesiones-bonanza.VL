@@ -1,5 +1,6 @@
 from django.db import models
 from empleados.models import Empleado
+from inventario.models import Municipio
 
 class Zona(models.Model):
     nombre = models.CharField(max_length=100, unique=True)

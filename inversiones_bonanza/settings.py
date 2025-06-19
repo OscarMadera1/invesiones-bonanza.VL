@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'usuarios',
     'zonas',
     'ventas',
+    'proveedores',
 
     # librerias externas
     'crispy_forms',

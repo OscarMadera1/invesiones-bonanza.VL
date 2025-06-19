@@ -1,7 +1,7 @@
-from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import RutaCobro, Cuota, Pago
 from .forms import RutaCobroForm, CuotaForm, PagoForm
+from django.urls import reverse_lazy
 
 
 # --- RutaCobro ---

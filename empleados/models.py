@@ -15,4 +15,4 @@ class Empleado(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.nombre} ({self.get_tipo_display()})"
+        return f"{self.nombre} {self.apellido} ({self.get_tipo_display()})"

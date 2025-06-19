@@ -3,16 +3,17 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Lista de Empleados</h2>
-    <a href="{% url 'empleados:crear_empleado' %}" class="btn btn-primary mb-3">Nuevo Empleado</a>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-4">Lista de Empleados</h2>
+        <a href="{% url 'empleados:crear_empleado' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Empleado</a>
+    </div>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped" id="tabla-empleados">
+        <table class="table table-hover table-striped datatable" id="tabla-empleados">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
                     <th>Identificación</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
                     <th>Teléfono</th>
                     <th>Dirección</th>
                     <th>Tipo</th>
@@ -23,16 +24,16 @@
             <tbody>
                 {% for empleado in empleados %}
                 <tr>
-                    <td>{{ empleado.id }}</td>
-                    <td>{{ empleado.nombre }}</td>
                     <td>{{ empleado.identificacion }}</td>
+                    <td>{{ empleado.nombre }}</td>
+                    <td>{{ empleado.apellido }}</td>
                     <td>{{ empleado.telefono }}</td>
                     <td>{{ empleado.direccion }}</td>
                     <td>{{ empleado.get_tipo_display }}</td>
                     <td>{{ empleado.activo|yesno:"Sí,No" }}</td>
                     <td>
-                        <a href="{% url 'empleados:editar_empleado' empleado.id %}" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="{% url 'empleados:eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                        <a href="{% url 'empleados:editar_empleado' empleado.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{% url 'empleados:eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
                 {% empty %}
