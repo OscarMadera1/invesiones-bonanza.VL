@@ -23,12 +23,12 @@
             <td>{{ bodega.nombre }}</td>
             <td>{{ bodega.municipio.nombre }}</td>
             <td>
-                <a href="{% url 'inventario:editar_bodega' bodega.pk %}" class="btn btn-sm btn-primary"><i
+                <a href="{% url 'inventario:editar_bodega' bodega.pk %}" title="Editar" class="btn btn-sm btn-primary"><i
                         class="bi bi-pencil-square"></i></a>
-                <a href="{% url 'inventario:eliminar_bodega' bodega.pk %}" class="btn btn-sm btn-danger"><i
+                <a href="{% url 'inventario:eliminar_bodega' bodega.pk %}" title="Eliminar" class="btn btn-sm btn-danger"><i
                         class="bi bi-trash"></i></a>
-                <a href="{% url 'inventario:crear_inventario_bodega' bodega.pk %}" class="btn btn-sm btn-success"><i
-                        class="bi bi-plus">Agregar producto</i></a>
+                <a href="{% url 'inventario:crear_inventario_bodega' bodega.pk %}" title="Agregar producto" class="btn btn-sm btn-success"><i
+                        class="bi bi-cart-plus-fill"></i></a>
             </td>
         </tr>
         {% endfor %}

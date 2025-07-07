@@ -145,26 +145,33 @@ class VentaCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = VentaForm()
         productos = Producto.objects.all()
+        zonas = Zona.objects.select_related('bodega').all()
         return render(request, self.template_name, {
             'form': form,
-            'productos': productos
+            'productos': productos,
+            'zonas': zonas
         })
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = VentaForm(request.POST)
         productos = Producto.objects.all()
+        zonas = Zona.objects.select_related('bodega').all()
         detalles = self._obtener_detalles_desde_post(request.POST)
 
         if form.is_valid() and detalles:
             zona = form.cleaned_data['zona']
 
-            # ⚠️ Asegúrate de tener zona.bodega o ajusta esto según tu modelo
+            # Verifica si la zona tiene una bodega asignada
             try:
                 bodega = zona.bodega
             except AttributeError:
                 sweetify.error(request, title="Error", text="La zona seleccionada no tiene una bodega asignada.")
-                return render(request, self.template_name, {'form': form, 'productos': productos})
+                return render(request, self.template_name, {
+                    'form': form,
+                    'productos': productos,
+                    'zonas': zonas
+                })
 
             errores_stock = []
 
@@ -190,7 +197,8 @@ class VentaCreateView(LoginRequiredMixin, View):
                 )
                 return render(request, self.template_name, {
                     'form': form,
-                    'productos': productos
+                    'productos': productos,
+                    'zonas': zonas
                 })
 
             # Guardar venta
@@ -204,6 +212,7 @@ class VentaCreateView(LoginRequiredMixin, View):
                 producto = d['producto']
                 cantidad = d['cantidad']
 
+                # Guardar detalle
                 VentaDetalle.objects.create(
                     venta=venta,
                     producto=producto,
@@ -212,6 +221,7 @@ class VentaCreateView(LoginRequiredMixin, View):
                     subtotal=d['subtotal'],
                 )
 
+                # Actualizar inventario
                 inventario = InventarioBodega.objects.get(bodega=bodega, producto=producto)
                 inventario.cantidad -= cantidad
                 inventario.save()
@@ -224,6 +234,7 @@ class VentaCreateView(LoginRequiredMixin, View):
             )
             return redirect(self.success_url)
 
+        # Formulario o detalles inválidos
         sweetify.error(
             request,
             title="Error en el formulario",
@@ -232,7 +243,8 @@ class VentaCreateView(LoginRequiredMixin, View):
         )
         return render(request, self.template_name, {
             'form': form,
-            'productos': productos
+            'productos': productos,
+            'zonas': zonas
         })
 
     def _obtener_detalles_desde_post(self, post_data):

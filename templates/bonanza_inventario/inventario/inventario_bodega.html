@@ -11,6 +11,8 @@
             <th>#</th>
             <th>Producto</th>
             <th>Cantidad</th>
+            <th>Descripción</th>
+            <th>Proveedor</th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +21,8 @@
             <td>{{ forloop.counter }}</td>
             <td>{{ item.producto.nombre }}</td>
             <td>{{ item.cantidad }}</td>
+            <td>{{ item.producto.descripcion }}</td>
+            <td>{{ item.producto.proveedor }}</td>
         </tr>
         {% endfor %}
     </tbody>
