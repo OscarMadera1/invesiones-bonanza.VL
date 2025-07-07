@@ -6,6 +6,7 @@ from .views import (
     VentaDeleteView,
     VentaDetailView,
     MapaVentasView,
+    stock_disponible,
 )
 
 app_name = 'ventas'
@@ -17,4 +18,6 @@ urlpatterns = [
     path('eliminar/<int:pk>/', VentaDeleteView.as_view(), name='venta_eliminar'),
     path('detalle/<int:pk>/', VentaDetailView.as_view(), name='venta_detalle'),
     path('mapa/', MapaVentasView.as_view(), name='mapa_ventas'),
+    path('api/stock-disponible/', stock_disponible, name='stock_disponible'),
+
 ]

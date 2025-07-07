@@ -27,6 +27,8 @@
                         class="bi bi-pencil-square"></i></a>
                 <a href="{% url 'inventario:eliminar_bodega' bodega.pk %}" class="btn btn-sm btn-danger"><i
                         class="bi bi-trash"></i></a>
+                <a href="{% url 'inventario:crear_inventario_bodega' bodega.pk %}" class="btn btn-sm btn-success"><i
+                        class="bi bi-plus">Agregar producto</i></a>
             </td>
         </tr>
         {% endfor %}

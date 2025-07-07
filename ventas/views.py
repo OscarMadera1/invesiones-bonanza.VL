@@ -12,14 +12,29 @@ from django.db.models.functions import TruncDate
 from django.forms import formset_factory
 from inventario.models import Producto,Municipio
 from zonas.models import Zona
-from django.shortcuts import render, redirect, get_object_or_404
 import sweetify
 from decimal import Decimal
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+from django.db import transaction
+from django.contrib import messages
+from inventario.models import InventarioBodega
+from django.http import JsonResponse
 
 VentaDetalleFormSet = formset_factory(VentaDetalleForm, extra=1)
 
+def stock_disponible(request):
+    producto_id = request.GET.get('producto_id')
+    bodega_id = request.GET.get('bodega_id')
+
+    if not producto_id or not bodega_id:
+        return JsonResponse({'success': False, 'error': 'Datos incompletos'})
+
+    try:
+        inventario = InventarioBodega.objects.get(producto_id=producto_id, bodega_id=bodega_id)
+        return JsonResponse({'success': True, 'stock': inventario.cantidad})
+    except InventarioBodega.DoesNotExist:
+        return JsonResponse({'success': True, 'stock': 0})
 
 
 class MapaVentasView(LoginRequiredMixin, TemplateView):
@@ -63,13 +78,13 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
 
         # Agrupación para gráficos
         ventas_por_vendedor = ventas.values('vendedor__nombre') \
-                                    .annotate(total=Sum('total')) \
-                                    .order_by('-total')
+            .annotate(total=Sum('total')) \
+            .order_by('-total')
 
         ventas_por_fecha = ventas.annotate(fecha_dia=TruncDate('fecha_venta')) \
-                                 .values('fecha_dia') \
-                                 .annotate(total=Sum('total')) \
-                                 .order_by('fecha_dia')
+            .values('fecha_dia') \
+            .annotate(total=Sum('total')) \
+            .order_by('fecha_dia')
 
         # Serializar datos relevantes para el mapa
         ventas_serializadas = [
@@ -114,6 +129,7 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
         })
         return context
 
+
 class VentaListView(ListView):
     model = Venta
     template_name = 'bonanza_ventas/venta_list.html'
@@ -128,20 +144,56 @@ class VentaCreateView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         form = VentaForm()
-        #formset = VentaDetalleFormSet()
         productos = Producto.objects.all()
         return render(request, self.template_name, {
             'form': form,
-            #'formset': formset,
             'productos': productos
         })
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = VentaForm(request.POST)
         productos = Producto.objects.all()
         detalles = self._obtener_detalles_desde_post(request.POST)
 
         if form.is_valid() and detalles:
+            zona = form.cleaned_data['zona']
+
+            # ⚠️ Asegúrate de tener zona.bodega o ajusta esto según tu modelo
+            try:
+                bodega = zona.bodega
+            except AttributeError:
+                sweetify.error(request, title="Error", text="La zona seleccionada no tiene una bodega asignada.")
+                return render(request, self.template_name, {'form': form, 'productos': productos})
+
+            errores_stock = []
+
+            for d in detalles:
+                producto = d['producto']
+                cantidad = d['cantidad']
+
+                inventario = InventarioBodega.objects.filter(bodega=bodega, producto=producto).first()
+
+                if not inventario:
+                    errores_stock.append(f"El producto '{producto.nombre}' no está en el inventario de la bodega.")
+                elif cantidad > inventario.cantidad:
+                    errores_stock.append(
+                        f"Stock insuficiente para '{producto.nombre}'. Disponible: {inventario.cantidad}, solicitado: {cantidad}."
+                    )
+
+            if errores_stock:
+                sweetify.error(
+                    request,
+                    title="Stock insuficiente",
+                    text="\n".join(errores_stock),
+                    timer=6000
+                )
+                return render(request, self.template_name, {
+                    'form': form,
+                    'productos': productos
+                })
+
+            # Guardar venta
             venta = form.save(commit=False)
             total = sum(Decimal(str(d['subtotal'])) for d in detalles)
             descuento = form.cleaned_data.get('descuento') or Decimal('0')
@@ -149,18 +201,25 @@ class VentaCreateView(LoginRequiredMixin, View):
             venta.save()
 
             for d in detalles:
+                producto = d['producto']
+                cantidad = d['cantidad']
+
                 VentaDetalle.objects.create(
                     venta=venta,
-                    producto=d['producto'],
-                    cantidad=int(d['cantidad']),
-                    precio_unitario=float(d['precio']),
-                    subtotal=float(d['subtotal']),
+                    producto=producto,
+                    cantidad=cantidad,
+                    precio_unitario=d['precio'],
+                    subtotal=d['subtotal'],
                 )
+
+                inventario = InventarioBodega.objects.get(bodega=bodega, producto=producto)
+                inventario.cantidad -= cantidad
+                inventario.save()
 
             sweetify.success(
                 request,
                 title="¡Venta exitosa!",
-                text="La venta fue registrada correctamente.",
+                text="La venta se registró y el inventario se actualizó.",
                 timer=3000
             )
             return redirect(self.success_url)
@@ -168,7 +227,7 @@ class VentaCreateView(LoginRequiredMixin, View):
         sweetify.error(
             request,
             title="Error en el formulario",
-            text="Por favor revisa los campos e intenta de nuevo.",
+            text="Por favor revisa los campos.",
             timer=3000
         )
         return render(request, self.template_name, {
@@ -199,6 +258,7 @@ class VentaCreateView(LoginRequiredMixin, View):
             except (Producto.DoesNotExist, ValueError):
                 continue
         return detalles
+
 
 class VentaUpdateView(LoginRequiredMixin, View):
     template_name = 'bonanza_ventas/venta_edit.html'

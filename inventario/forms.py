@@ -4,11 +4,14 @@ from .models import Producto, Categoria, Municipio, Bodega, InventarioBodega
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'categoria', 'precio']
+        fields = ['nombre', 'categoria','descripcion', 'precio','precio_venta','proveedor']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del producto'}),
             'categoria': forms.Select(attrs={'class': 'form-select'}),
-            'precio': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'precio': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio base'}),
+            'precio_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio de venta'}),
+            'proveedor': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class CategoriaForm(forms.ModelForm):

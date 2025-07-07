@@ -1,4 +1,5 @@
 from django.db import models
+from proveedores.models import Proveedor
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
@@ -9,7 +10,10 @@ class Categoria(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='productos')
+    descripcion = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_venta = models.DecimalField(max_digits=10, decimal_places=2)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.PROTECT, related_name='productos')
 
     def __str__(self):
         return self.nombre

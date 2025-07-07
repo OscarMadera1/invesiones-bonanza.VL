@@ -33,7 +33,7 @@
         <hr>
         <h5>Detalles de productos</h5>
 
-        <table class="table table-bordered" id="detalle-table">
+        <table class="table table-hover" id="detalle-table">
             <thead>
             <tr>
                 <th>Producto</th>
@@ -48,7 +48,7 @@
                 <td>
                     <select name="producto[]" class="form-select producto-select">
                         {% for producto in productos %}
-                        <option value="{{ producto.id }}">{{ producto.nombre }}</option>
+                        <option value="{{ producto.id }}" data-precio="{{ producto.precio_venta }}">{{ producto.nombre }}</option>
                         {% endfor %}
                     </select>
                 </td>
@@ -105,6 +105,14 @@
 
       function inicializarFila(row) {
         row.find('.producto-select').select2({ width: '100%' });
+
+        row.find('.producto-select').on('change', function () {
+        const selected = $(this).find('option:selected');
+        const precio = parseFloat(selected.data('precio')) || 0;
+        row.find('.precio').val(precio.toFixed(2));
+        actualizarSubtotal(row);
+        actualizarTotal();
+        });
 
         row.find('.cantidad, .precio').on('input', function () {
           actualizarSubtotal(row);

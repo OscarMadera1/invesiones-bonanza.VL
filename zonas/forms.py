@@ -4,8 +4,8 @@ from .models import Zona
 class ZonaForm(forms.ModelForm):
     class Meta:
         model = Zona
-        fields = ['nombre', 'municipio', 'descripcion', 'cobrador_asignado']
+        fields = ['nombre', 'municipio', 'descripcion', 'cobrador_asignado','bodega']
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 3}),
-            'municipio': forms.Select(attrs={'class':'form-control'})
+            'municipio': forms.TextInput(attrs={'class':'form-control'})
         }

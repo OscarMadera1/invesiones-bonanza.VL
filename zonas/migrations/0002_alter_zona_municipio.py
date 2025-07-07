@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='zona',
             name='municipio',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='zonas', to='inventario.municipio'),
+            field=models.CharField(max_length=100, blank=True, null=True),
         ),
     ]

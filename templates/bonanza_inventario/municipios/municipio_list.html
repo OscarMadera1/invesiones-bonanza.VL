@@ -1,17 +1,19 @@
-<!-- templates/bonanza_inventario/municipio_list.html -->
-{% extends 'bonanza_inventario/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Municipios{% endblock %}
 
 {% block content %}
-<h2>Municipios</h2>
-<a href="{% url 'inventario:crear_municipio' %}" class="btn btn-primary mb-3">Nuevo Municipio</a>
-<table class="table table-bordered table-striped datatable">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-people"></i> Lista de municipios</h2>
+        <a href="{% url 'inventario:crear_municipio' %}"  class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo municipio</a>
+    </div>
+
+<table class="table table-hover table-striped datatable table-responsive">
     <thead class="table-dark">
         <tr>
             <th>#</th>
             <th>Nombre</th>
-            <th>Departamento</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -19,7 +21,10 @@
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ municipio.nombre }}</td>
-            <td>{{ municipio.departamento }}</td>
+            <td>
+                <a href="{% url 'inventario:editar_municipio' municipio.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                <a href="{% url 'inventario:crear_inventario_bodega' municipio.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

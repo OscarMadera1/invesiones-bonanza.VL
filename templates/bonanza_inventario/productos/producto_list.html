@@ -1,4 +1,3 @@
-<!-- templates/bonanza_inventario/producto_list.html -->
 {% extends 'base.html' %}
 
 {% block title %}Productos{% endblock %}
@@ -15,6 +14,7 @@
             <th>#</th>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th>Proveedor</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -24,10 +24,11 @@
             <td>{{ forloop.counter }}</td>
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.descripcion }}</td>
+            <td>{{ producto.proveedor }}</td>
             <td>
-                <a href="{% url 'inventario:editar_producto' producto.pk %}" class="btn btn-sm btn-primary"><i
+                <a href="{% url 'inventario:editar_producto' producto.pk %}" title="Editar" class="btn btn-sm btn-primary"><i
                         class="bi bi-pencil-square"></i></a>
-                <a href="{% url 'inventario:eliminar_producto' producto.pk %}" class="btn btn-sm btn-danger"><i
+                <a href="{% url 'inventario:eliminar_producto' producto.pk %}"  title="Eliminar Cliente" class="btn btn-sm btn-danger"><i
                         class="bi bi-trash"></i></a>
             </td>
         </tr>
