@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Empleado
 from .forms import EmpleadoForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def lista_empleados(request):
     empleados = Empleado.objects.all()
     return render(request, 'bonanza_empleados/lista_empleados.html', {'empleados': empleados})
 
+@login_required
 def crear_empleado(request):
     form = EmpleadoForm(request.POST or None)
     if form.is_valid():
@@ -13,6 +16,7 @@ def crear_empleado(request):
         return redirect('empleados:lista_empleados')
     return render(request, 'bonanza_empleados/form_empleado.html', {'form': form})
 
+@login_required
 def editar_empleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
     form = EmpleadoForm(request.POST or None, instance=empleado)
@@ -21,6 +25,7 @@ def editar_empleado(request, empleado_id):
         return redirect('empleados:lista_empleados')
     return render(request, 'bonanza_empleados/form_empleado.html', {'form': form})
 
+@login_required
 def eliminar_empleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
     if request.method == 'POST':

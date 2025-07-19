@@ -20,6 +20,7 @@ from django.db import transaction
 from django.contrib import messages
 from inventario.models import InventarioBodega
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 VentaDetalleFormSet = formset_factory(VentaDetalleForm, extra=1)
 
@@ -130,7 +131,7 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class VentaListView(ListView):
+class VentaListView(ListView, LoginRequiredMixin):
     model = Venta
     template_name = 'bonanza_ventas/venta_list.html'
     context_object_name = 'ventas'
@@ -365,12 +366,14 @@ class VentaUpdateView(LoginRequiredMixin, View):
                 continue
         return detalles
 
-class VentaDeleteView(DeleteView):
+
+class VentaDeleteView(DeleteView, LoginRequiredMixin):
     model = Venta
     template_name = 'bonanza_ventas/venta_confirm_delete.html'
     success_url = reverse_lazy('ventas:venta_list')
 
-class VentaDetailView(DetailView):
+
+class VentaDetailView(DetailView,LoginRequiredMixin):
     model = Venta
     template_name = 'bonanza_ventas/venta_detail.html'
     context_object_name = 'venta'

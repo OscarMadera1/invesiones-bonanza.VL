@@ -3,14 +3,15 @@ from .models import Proveedor
 from .forms import ProveedorForm
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-
+@login_required
 def lista_provedores(request):
     proveedores = Proveedor.objects.all()
     return render(request, 'bonanza_proveedores/proveedor_list.html', {'proveedores': proveedores})
 
-
+@login_required
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -34,6 +35,7 @@ def editar_proveedor(request, proveedor_id):
         form = ProveedorForm(instance=proveedor)
     return render(request, 'bonanza_proveedores/proveedor_form.html', {'form': form, 'titulo': 'Editar Proveedor'})
 
+@login_required
 def eliminar_proveedor(request, proveedor_id):
     proveedor = get_object_or_404(Proveedor, id=proveedor_id)
     if request.method == 'POST':

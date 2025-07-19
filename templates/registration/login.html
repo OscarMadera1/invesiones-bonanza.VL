@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inversiones Bonanza - Iniciar Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load crispy_forms_tags %}
+    <style>
+        :root {
+            --bonanza-primary: #3498db; /* Azul de Bootstrap */
+            --bonanza-secondary: #2c3e50; /* Azul oscuro */
+            --bonanza-accent: #f39c12; /* Naranja/Dorado */
+            --bonanza-background: #f0f2f5; /* Fondo gris claro */
+            --bonanza-card-bg: #ffffff; /* Fondo de tarjeta */
+            --bonanza-text-dark: #34495e; /* Texto oscuro */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bonanza-background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            background-color: var(--bonanza-card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .login-header {
+            margin-bottom: 2rem;
+        }
+        .login-header .logo-placeholder {
+            width: 70px;
+            height: 70px;
+            background-color: var(--bonanza-accent);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .login-header h2 {
+            color: var(--bonanza-secondary);
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+        }
+        .form-control:focus {
+            border-color: var(--bonanza-primary);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+        .btn-primary {
+            background-color: var(--bonanza-primary);
+            border-color: var(--bonanza-primary);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .text-muted {
+            color: var(--bonanza-text-muted) !important;
+        }
+        .alert-danger {
+            border-radius: 8px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-placeholder">IB</div>
+            <h2>Bienvenido a Inversiones Bonanza</h2>
+            <p class="text-muted">Inicia sesión para acceder a tu panel de control.</p>
+        </div>
+
+{% if form.errors %}
+    <div class="alert alert-danger mb-4" role="alert">
+        Tu nombre de usuario y contraseña no coinciden. Por favor, inténtalo de nuevo.
+    </div>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+        <div class="alert alert-warning mb-4" role="alert">
+            Tu cuenta no tiene acceso a esta página.
+        </div>
+    {% else %}
+        <div class="alert alert-info mb-4" role="alert">
+            Por favor, inicia sesión para ver esta página.
+        </div>
+    {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="mb-3 text-start">
+        {{ form.username|as_crispy_field }}
+    </div>
+    <div class="mb-4 text-start">
+        {{ form.password|as_crispy_field }}
+    </div>
+    <div class="d-grid gap-2 mb-3">
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    </div>
+</form>
+
+
+        <p class="text-muted mt-3">
+            <a href="{% url 'password_reset' %}" class="text-primary text-decoration-none">¿Olvidaste tu contraseña?</a>
+        </p>
+        {# Opcional: Enlace para registrarse si tu app lo permite #}
+        {# <p class="text-muted mt-2">¿No tienes una cuenta? <a href="{% url 'signup' %}" class="text-primary text-decoration-none">Regístrate aquí</a></p> #}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

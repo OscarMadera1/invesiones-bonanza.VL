@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
 from .models import Producto, Categoria, Municipio, Bodega, InventarioBodega
 from .forms import (
     ProductoForm, CategoriaForm, MunicipioForm,
@@ -8,10 +8,12 @@ from .forms import (
 )
 
 # --- Productos ---
+@login_required
 def lista_productos(request):
     productos = Producto.objects.all()
     return render(request, 'bonanza_inventario/productos/producto_list.html', {'productos': productos})
 
+@login_required
 def crear_producto(request):
     form = ProductoForm(request.POST or None)
     if form.is_valid():
@@ -20,6 +22,7 @@ def crear_producto(request):
         return redirect('inventario:lista_productos')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     form = ProductoForm(request.POST or None, instance=producto)
@@ -29,6 +32,7 @@ def editar_producto(request, producto_id):
         return redirect('inventario:lista_productos')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     producto.delete()
@@ -37,10 +41,12 @@ def eliminar_producto(request, producto_id):
 
 
 # --- Categorías ---
+@login_required
 def lista_categorias(request):
     categorias = Categoria.objects.all()
     return render(request, 'bonanza_inventario/categorias/categoria_list.html', {'categorias': categorias})
 
+@login_required
 def crear_categoria(request):
     form = CategoriaForm(request.POST or None)
     if form.is_valid():
@@ -51,6 +57,7 @@ def crear_categoria(request):
         form = CategoriaForm()
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def editar_categoria(request, categoria_id):
     categoria = get_object_or_404(Categoria, id=categoria_id)
     form = CategoriaForm(request.POST or None, instance=categoria)
@@ -60,6 +67,7 @@ def editar_categoria(request, categoria_id):
         return redirect('inventario:lista_categorias')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def eliminar_categoria(request, categoria_id):
     categoria = get_object_or_404(Categoria, id=categoria_id)
     if request.method=='POST':
@@ -68,10 +76,12 @@ def eliminar_categoria(request, categoria_id):
     return render(request, 'bonanza_inventario/categorias/categoria_confirm_delete.html', {'categoria': categoria})
 
 # --- Municipios ---
+@login_required
 def lista_municipios(request):
     municipios = Municipio.objects.all()
     return render(request, 'bonanza_inventario/municipios/municipio_list.html', {'municipios': municipios})
 
+@login_required
 def crear_municipio(request):
     form = MunicipioForm(request.POST or None)
     if form.is_valid():
@@ -80,6 +90,7 @@ def crear_municipio(request):
         return redirect('inventario:lista_municipios')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def editar_municipio(request, municipio_id):
     municipio = get_object_or_404(Municipio, id=municipio_id)
     form = MunicipioForm(request.POST or None, instance=municipio)
@@ -89,6 +100,7 @@ def editar_municipio(request, municipio_id):
         return redirect('inventario:lista_municipios')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def eliminar_municipio(request, municipio_id):
     municipio = get_object_or_404(Municipio, id=municipio_id)
     municipio.delete()
@@ -97,10 +109,12 @@ def eliminar_municipio(request, municipio_id):
 
 
 # --- Bodegas ---
+@login_required
 def lista_bodegas(request):
     bodegas = Bodega.objects.select_related('municipio').all()
     return render(request, 'bonanza_inventario/bodegas/bodega_list.html', {'bodegas': bodegas})
 
+@login_required
 def crear_bodega(request):
     form = BodegaForm(request.POST or None)
     if form.is_valid():
@@ -109,6 +123,7 @@ def crear_bodega(request):
         return redirect('inventario:lista_bodegas')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def editar_bodega(request, bodega_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     form = BodegaForm(request.POST or None, instance=bodega)
@@ -118,6 +133,7 @@ def editar_bodega(request, bodega_id):
         return redirect('inventario:lista_bodegas')
     return render(request, 'bonanza_inventario/form.html', {'form': form})
 
+@login_required
 def eliminar_bodega(request, bodega_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     bodega.delete()
@@ -126,6 +142,7 @@ def eliminar_bodega(request, bodega_id):
 
 
 # --- Inventario por bodega ---
+@login_required
 def inventario_bodega(request, bodega_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     inventario = InventarioBodega.objects.filter(bodega=bodega).select_related('producto')
@@ -134,6 +151,7 @@ def inventario_bodega(request, bodega_id):
         'inventario': inventario
     })
 
+@login_required
 def crear_inventario_bodega(request, bodega_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     form = InventarioBodegaForm(request.POST or None)
@@ -145,6 +163,7 @@ def crear_inventario_bodega(request, bodega_id):
         return redirect('inventario:inventario_bodega', bodega_id=bodega.id)
     return render(request, 'bonanza_inventario/inventario/form_inventario.html', {'form': form, 'bodega': bodega})
 
+@login_required
 def editar_inventario_bodega(request, bodega_id, item_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     item = get_object_or_404(InventarioBodega, id=item_id, bodega=bodega)
@@ -155,6 +174,7 @@ def editar_inventario_bodega(request, bodega_id, item_id):
         return redirect('inventario:inventario_bodega', bodega_id=bodega.id)
     return render(request, 'bonanza_inventario/inventario/form_inventario.html', {'form': form, 'bodega': bodega})
 
+@login_required
 def eliminar_inventario_bodega(request, bodega_id, item_id):
     bodega = get_object_or_404(Bodega, id=bodega_id)
     item = get_object_or_404(InventarioBodega, id=item_id, bodega=bodega)

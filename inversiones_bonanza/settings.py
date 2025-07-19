@@ -152,3 +152,8 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 CSRF_TRUSTED_ORIGINS = [
     "https://*.ngrok-free.app",  # Para cualquier subdominio de ngrok-free.app
 ]
+
+# Configuración la URL de inicio de sesión y la página a redirigir tras autenticarse
+LOGIN_URL = '/account/login'
+LOGIN_REDIRECT_URL = '/clientes/'
+LOGOUT_REDIRECT_URL = '/account/login'
