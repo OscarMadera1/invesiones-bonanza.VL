@@ -64,3 +64,15 @@
 </a>
 
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('.datatable').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+        });
+    });
+</script>
+{% endblock %}

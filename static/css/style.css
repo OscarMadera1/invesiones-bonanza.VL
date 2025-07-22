@@ -1,0 +1,322 @@
+ :root {
+            --bonanza-primary: #3498db; /* Azul de Bootstrap */
+            --bonanza-secondary: #2c3e50; /* Azul oscuro para sidebar */
+            --bonanza-accent: #f39c12; /* Naranja/Dorado para acentos */
+            --bonanza-background: #f0f2f5; /* Fondo gris claro */
+            --bonanza-card-bg: #ffffff; /* Fondo de tarjeta */
+            --bonanza-text-dark: #34495e; /* Texto oscuro */
+            --bonanza-text-muted: #7f8c8d; /* Texto atenuado */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bonanza-background);
+            display: flex; /* Flexbox para layout sidebar + contenido */
+            min-height: 100vh; /* Ocupa al menos el alto de la ventana */
+            color: var(--bonanza-text-dark);
+            overflow-x: hidden; /* Evita scroll horizontal en caso de desbordamiento */
+        }
+
+        /* Estilos del Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--bonanza-secondary);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,.15);
+            position: sticky; /* Sidebar fijo al hacer scroll */
+            top: 0;
+            left: 0;
+            height: 100vh; /* Ocupa el 100% del alto visible */
+            overflow-y: auto; /* Scroll si el contenido es largo */
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            transition: all 0.3s ease-in-out; /* Transición suave al colapsar/expandir */
+            z-index: 1000; /* Asegura que esté por encima del contenido principal */
+        }
+        .sidebar.collapsed {
+            width: 70px; /* Ancho cuando está colapsado */
+        }
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1); /* Separador */
+        }
+        .sidebar-header h3 {
+            font-weight: 700;
+            color: #ecf0f1;
+            font-size: 1.5rem;
+            transition: opacity 0.3s ease;
+            white-space: nowrap; /* Evita que el texto se rompa */
+            overflow: hidden; /* Oculta el desbordamiento */
+        }
+        .sidebar.collapsed .sidebar-header h3 {
+            opacity: 0;
+            width: 0; /* Oculta el texto al colapsar */
+        }
+        .sidebar-header .logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background-color: var(--bonanza-accent);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed .sidebar-header .logo-placeholder {
+            margin-right: 0;
+            width: 50px; /* Un poco más grande para el icono */
+            height: 50px;
+        }
+        .sidebar-nav .nav-link {
+            color: #ecf0f1;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+        }
+        .sidebar-nav .nav-link:hover {
+            background-color: rgba(52, 152, 219, 0.2); /* Un azul más suave al pasar el ratón */
+            transform: translateX(5px); /* Pequeño desplazamiento */
+        }
+        .sidebar-nav .nav-link.active {
+            background-color: var(--bonanza-primary);
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .sidebar-nav .nav-link i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            min-width: 20px; /* Asegura un ancho mínimo para los iconos */
+            text-align: center;
+        }
+        .sidebar.collapsed .sidebar-nav .nav-link span {
+            display: none; /* Oculta el texto al colapsar */
+        }
+        .sidebar.collapsed .sidebar-nav .nav-link i {
+            margin-right: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Contenido Principal */
+        .main-content {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            padding: 1.5rem;
+            background-color: var(--bonanza-background);
+            transition: margin-left 0.3s ease; /* Transición si el sidebar se colapsa */
+        }
+        .navbar-top {
+            background-color: var(--bonanza-card-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+        }
+
+        /* Estilos de Tarjetas (Cards) */
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,.08);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: none; /* Eliminar borde por defecto de Bootstrap */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,.12);
+        }
+        .card-header {
+            background-color: var(--bonanza-primary);
+            color: white;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+        }
+        /* Estilos específicos para tarjetas de métricas */
+        .metric-card .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+        }
+        .metric-card .icon-circle {
+            background-color: #e0f2fe; /* Azul claro */
+            color: var(--bonanza-primary);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .metric-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--bonanza-text-dark);
+        }
+        .metric-card .label {
+            font-size: 0.95rem;
+            color: var(--bonanza-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Estilos de Formularios y Botones */
+        .form-control, .btn {
+            border-radius: 8px;
+        }
+        .btn-primary {
+            background-color: var(--bonanza-primary);
+            border-color: var(--bonanza-primary);
+            font-weight: 500;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .btn-outline-primary {
+            color: var(--bonanza-primary);
+            border-color: var(--bonanza-primary);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--bonanza-primary);
+            color: white;
+        }
+
+        /* Estilos de Tablas */
+        .table {
+            border-radius: 8px;
+            overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido de la tabla */
+        }
+        .table thead th {
+            background-color: var(--bonanza-primary);
+            color: white;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+        .table tbody tr {
+            background-color: var(--bonanza-card-bg);
+            transition: background-color 0.2s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa; /* Un ligero cambio al pasar el ratón */
+        }
+        .table tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle; /* Centra el contenido verticalmente */
+        }
+
+        /* Ajustes Responsivos */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Apila el sidebar y el contenido en móviles */
+            }
+            .sidebar {
+                position: fixed; /* Fijo en móvil */
+                z-index: 1030;
+                transform: translateX(-100%); /* Oculto por defecto */
+                width: 250px;
+                box-shadow: 4px 0 10px rgba(0,0,0,.2);
+                height: 100%; /* Altura completa de la pantalla */
+            }
+            .sidebar.show {
+                transform: translateX(0%); /* Visible cuando se abre el Offcanvas */
+            }
+            .main-content {
+                margin-left: 0; /* No hay margen izquierdo en móvil */
+                padding-top: 5rem; /* Espacio para la barra superior */
+            }
+            .navbar-toggler-sidebar {
+                display: block !important; /* Mostrar el botón del menú de hamburguesa */
+                margin-right: 1rem;
+            }
+            .sidebar-header h3 {
+                opacity: 1; /* Asegura que el título sea visible cuando se abre el offcanvas */
+                width: auto;
+            }
+            .navbar-top {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-radius: 0; /* Sin bordes redondeados en navbar fijo móvil */
+                z-index: 1020;
+            }
+        }
+        .navbar-toggler-sidebar {
+            display: none; /* Oculto por defecto en escritorio */
+        }
+
+        /* Notificaciones Personalizadas (reemplazo de alerts de JS) */
+        .app-message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            display: none; /* Oculto por defecto */
+            animation: fadeIn 0.5s ease-out;
+            min-width: 250px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .app-message-box.show {
+            display: block;
+        }
+        .app-message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .app-message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .app-message-box.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        /* Estilos para la página 404 */
+        .error-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            text-align: center;
+            background-color: var(--bonanza-background);
+            flex-grow: 1; /* Para que ocupe todo el espacio disponible */
+            padding: 2rem;
+        }
+        .error-page h1 {
+            font-size: 6rem;
+            color: #dc3545; /* Rojo para el error */
+            font-weight: 700;
+        }
+        .error-page p {
+            font-size: 1.5rem;
+            color: #6c757d;
+        }
