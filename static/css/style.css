@@ -308,7 +308,7 @@
             min-height: 80vh;
             text-align: center;
             background-color: var(--bonanza-background);
-            flex-grow: 1; /* Para que ocupe todo el espacio disponible */
+            flex-grow: 1; /* Ocupa el espacio restante */
             padding: 2rem;
         }
         .error-page h1 {
