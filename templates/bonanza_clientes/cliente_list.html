@@ -9,7 +9,7 @@
         <a href="{% url 'bonanza_clientes:cliente_create' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Cliente</a>
     </div>
 
-    <table id="clientesTable" class="table table-striped  table-hover datatable">
+    <table class="table table-striped  table-hover datatable">
         <thead class="table-dark">
             <tr>
                 <th>Identificación</th>
@@ -33,8 +33,8 @@
                 <td>{{ cliente.zona }}</td>
                 <td>{{ cliente.municipio }}</td>
                 <td>
-                    <a href="{% url 'bonanza_clientes:cliente_update' cliente.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
-                    <a href="{% url 'bonanza_clientes:cliente_delete' cliente.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+                    <a href="{% url 'bonanza_clientes:cliente_update' cliente.id %}" title="Editar" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                    <a href="{% url 'bonanza_clientes:cliente_delete' cliente.id %}" title="Eliminar" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>
             {% endfor %}
@@ -48,6 +48,7 @@
 <script>
     $(document).ready(function () {
         $('.datatable').DataTable({
+            responsive: true,
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
             }

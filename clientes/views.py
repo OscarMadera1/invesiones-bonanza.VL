@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Cliente
 from .forms import ClienteForm
+
 @login_required
 def cliente_list(request):
     clientes = Cliente.objects.select_related('zona', 'municipio')

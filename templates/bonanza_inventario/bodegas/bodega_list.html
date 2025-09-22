@@ -23,15 +23,28 @@
             <td>{{ bodega.nombre }}</td>
             <td>{{ bodega.municipio.nombre }}</td>
             <td>
+                <a href="{% url 'inventario:inventario_bodega' bodega.id %}" title="Ver" class="btn btn-sm btn-secondary"><i
+                        class="bi bi-eye-fill"></i></a>
                 <a href="{% url 'inventario:editar_bodega' bodega.pk %}" title="Editar" class="btn btn-sm btn-primary"><i
                         class="bi bi-pencil-square"></i></a>
                 <a href="{% url 'inventario:eliminar_bodega' bodega.pk %}" title="Eliminar" class="btn btn-sm btn-danger"><i
-                        class="bi bi-trash"></i></a>
+                        class="bi bi-trash-fill"></i></a>
                 <a href="{% url 'inventario:crear_inventario_bodega' bodega.pk %}" title="Agregar producto" class="btn btn-sm btn-success"><i
-                        class="bi bi-cart-plus-fill"></i></a>
+                        class="bi bi-database-fill-add"></i></a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% endblock %}
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('.datatable').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+        });
+    });
+</script>
 {% endblock %}

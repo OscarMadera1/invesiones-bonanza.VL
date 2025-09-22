@@ -8,7 +8,7 @@
         <a href="{% url 'empleados:crear_empleado' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Empleado</a>
     </div>
     <div class="table-responsive">
-        <table class="table table-hover table-striped datatable" id="tabla-empleados">
+        <table class="table table-hover table-striped datatable" >
             <thead class="table-dark">
                 <tr>
                     <th>Identificación</th>
@@ -32,8 +32,8 @@
                     <td>{{ empleado.get_tipo_display }}</td>
                     <td>{{ empleado.activo|yesno:"Sí,No" }}</td>
                     <td>
-                        <a href="{% url 'empleados:editar_empleado' empleado.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
-                        <a href="{% url 'empleados:eliminar_empleado' empleado.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+                        <a href="{% url 'empleados:editar_empleado' empleado.id %}" title="Editar" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{% url 'empleados:eliminar_empleado' empleado.id %}" title="Eliminar" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
                 {% empty %}
@@ -46,11 +46,13 @@
     </div>
 </div>
 
+{% endblock %}
+{% block extra_js %}
 <script>
     $(document).ready(function () {
-        $('#tabla-empleados').DataTable({
+        $('.datatable').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
             }
         });
     });

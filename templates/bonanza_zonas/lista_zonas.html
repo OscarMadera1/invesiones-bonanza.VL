@@ -9,7 +9,7 @@
     </div>
 
     <div class="table-responsive">
-        <table id="tablaZonas" class="table table-hover table-striped">
+        <table class="table table-hover table-striped datatable">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
@@ -40,12 +40,14 @@
         </table>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
     $(document).ready(function () {
-        $('#tablaZonas').DataTable({
+        $('.datatable').DataTable({
             language: {
-                url: "{% static 'js/es-es.json' %}"
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
             }
         });
     });

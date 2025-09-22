@@ -3,28 +3,32 @@
 {% block content %}
 <h2 class="mb-4">Mapa de Ventas</h2>
 
-<form method="get" class="row g-3 mb-4">
-  <div class="row">
-    <div class="col-md-3 mb-2">
-      {{ form.fecha_inicio.label_tag }} {{ form.fecha_inicio }}
-    </div>
-    <div class="col-md-3 mb-2">
-      {{ form.fecha_fin.label_tag }} {{ form.fecha_fin }}
-    </div>
-    <div class="col-md-3 mb-2">
-      {{ form.vendedor.label_tag }} {{ form.vendedor }}
-    </div>
-    <div class="col-md-3 mb-2">
-      {{ form.municipio.label_tag }} {{ form.municipio }}
-    </div>
-    <div class="col-md-3 mb-2">
-      {{ form.zona.label_tag }} {{ form.zona }}
-    </div>
-    <div class="col-md-3 mb-2 align-self-end">
-      <button class="btn btn-primary w-100" type="submit">Filtrar</button>
-    </div>
+<form method="get" class="row row-cols-1 row-cols-md-6 g-2 align-items-end mb-4">
+  <div class="col">
+    <label for="id_fecha_inicio" class="form-label">Fecha inicio</label>
+    {{ form.fecha_inicio }}
+  </div>
+  <div class="col">
+    <label for="id_fecha_fin" class="form-label">Fecha fin</label>
+    {{ form.fecha_fin }}
+  </div>
+  <div class="col">
+    <label for="id_vendedor" class="form-label">Vendedor</label>
+    {{ form.vendedor }}
+  </div>
+  <div class="col">
+    <label for="id_municipio" class="form-label">Municipio</label>
+    {{ form.municipio }}
+  </div>
+  <div class="col">
+    <label for="id_zona" class="form-label">Zona</label>
+    {{ form.zona }}
+  </div>
+  <div class="col">
+    <button class="btn btn-primary w-100" type="submit"><i class="bi bi-filter"></i>  Filtrar</button>
   </div>
 </form>
+
 
 <div class="row mb-4">
   <div class="col-md-6">

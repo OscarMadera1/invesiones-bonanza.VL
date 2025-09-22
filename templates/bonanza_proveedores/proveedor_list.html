@@ -10,7 +10,7 @@
         <a href="{% url 'proveedores:crear_proveedor' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo proveedor</a>
     </div>
 
-    <table id="provedoresTable" class="table table-striped  table-hover datatable">
+    <table class="table table-striped  table-hover datatable">
         <thead class="table-dark">
             <tr>
                 <th>Codigó</th>
@@ -37,4 +37,16 @@
     </table>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('.datatable').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+        });
+    });
+</script>
 {% endblock %}

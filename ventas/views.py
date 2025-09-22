@@ -54,9 +54,9 @@ class MapaVentasView(LoginRequiredMixin, TemplateView):
             zona = form.cleaned_data.get('zona')
 
             if fecha_inicio:
-                ventas = ventas.filter(fecha__gte=fecha_inicio)
+                ventas = ventas.filter(fecha_venta__gte=fecha_inicio)
             if fecha_fin:
-                ventas = ventas.filter(fecha__lte=fecha_fin)
+                ventas = ventas.filter(fecha_venta__lte=fecha_fin)
             if vendedor:
                 ventas = ventas.filter(vendedor=vendedor)
             if municipio:

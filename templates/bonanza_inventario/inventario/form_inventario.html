@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}Agregar Producto a Bodega{% endblock %}
 
 {% block content %}
 <div class="card shadow">
-    <div class="card-header bg-success text-white">
+    <div class="card-header bg-primary text-white">
         <h5 class="mb-0">Asignar Producto a {{ bodega.nombre }}</h5>
     </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form|crispy }}
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="{% url 'inventario:inventario_bodega' bodega.id %}" class="btn btn-secondary">Volver</a>
         </form>
