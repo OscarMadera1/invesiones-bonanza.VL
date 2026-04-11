@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Pipenv (inversiones_bonanzaVL)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Pipenv (invesiones-bonanza.VL)" project-jdk-type="Python SDK" />
 </project>
